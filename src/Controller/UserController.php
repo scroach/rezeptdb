@@ -3,9 +3,8 @@
 
 namespace App\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 
-class UserController extends FOSRestController
+class UserController
 {
 	public function getUsersAction()
 	{

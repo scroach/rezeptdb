@@ -5,3 +5,7 @@
 #app_lucky_number:
 #    path: /lucky/number
 #    controller: App\Controller\LuckyController::number
+
+app_lucky_number:
+    path: /lucky/number
+    controller: App\Controller\RecipeController::index

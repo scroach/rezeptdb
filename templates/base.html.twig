@@ -1,12 +1,66 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+	<!-- Standard Meta -->
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+	<!-- Site Properties -->
+	<title>{% block title %}NO{% endblock %}</title>
+	<script
+			src="https://code.jquery.com/jquery-3.3.1.min.js"
+			integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+
+</head>
+<body>
+
+<div class="ui stackable labeled icon container menu">
+	<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
+	<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+	<a class="disabled item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+</div>
+
+{% block body %}{% endblock %}
+{% block javascripts %}{% endblock %}
+
+<style>
+	.last.container {
+		margin-bottom: 300px !important;
+	}
+
+	h1.ui.center.header {
+		margin-top: 3em;
+	}
+
+	h2.ui.center.header {
+		margin: 4em 0em 2em;
+	}
+
+	h3.ui.center.header {
+		margin-top: 2em;
+		padding: 2em 0em;
+	}
+
+	body {
+		padding: 1em;
+	}
+
+	.rec-images img {
+		object-fit: cover;
+		width: 100%;
+		height: 100%;
+		max-height: 200px;
+	}
+
+	.ui.cards > .card > .image > img {
+		object-fit: cover;
+		width: 100%;
+		height: 200px;
+	}
+</style>
+</body>
 </html>

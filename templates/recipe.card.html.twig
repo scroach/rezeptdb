@@ -1,0 +1,40 @@
+{# @var recipe \App\Entity\Recipe #}
+<div class="ui fluid card">
+	<div class="image">
+		{% set image = recipe.images | first %}
+		{% if (image) %}
+			<img src="{{ image.url }}">
+		{% else %}
+			<img src="https://foodtango.com.au/img/ui/noimage.png">
+		{% endif %}
+	</div>
+	<div class="content">
+		<div class="header">
+			<a class="" href="{{ path('showRecipe', {'id': recipe.id}) }}">{{ recipe.label }}</a>
+		</div>
+		<div class="meta">
+			{% for tag in recipe.tags %}
+				<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
+			{% endfor %}
+		</div>
+		<div class="description">
+			<div class="ui list">
+				{% for ingredient in recipe.ingredients %}
+					<a class="item">
+						<i class="right htriangle icon"></i>
+						<div class="content">
+							<div class="header">{{ ingredient.amount }} - {{ ingredient.label }}</div>
+						</div>
+					</a>
+				{% endfor %}
+			</div>
+
+		</div>
+		<i class="tags icon"></i>
+		5 Tags
+	</div>
+	<div class="extra content">
+		<span class="right floated"><i class="clock icon"></i>{{ recipe.effort }} min</span>
+		<span><i class="tasks icon"></i>{{ recipe.effort }} Zutaten</span>
+	</div>
+</div>

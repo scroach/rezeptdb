@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<h1 class="ui center aligned header">Rezept anlegen</h1>
+
+	<div class="ui segment">
+		<form class="ui form">
+			<div class="two fields">
+				<div class="field">
+					<label>URL</label>
+					<div class="ui fluid icon input">
+						<input placeholder="URL..." type="text" name="url">
+						<i class="icon search"></i>
+					</div>
+				</div>
+				<div class="field">
+					<label>Tags</label>
+					<div class="ui fluid right labeled left icon input">
+						<i class="tags icon"></i>
+						<input placeholder="Enter tags" type="text">
+						<a class="ui tag label">
+							Add Tag
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="fields">
+				<div class="two wide field">
+					<label>Zutaten</label>
+					<input placeholder="Enter tags" type="text">
+				</div>
+				<div class="eight wide field">
+					<label>Beschreibung</label>
+					<textarea name="description"></textarea>
+				</div>
+				<div class="six wide field">
+					<div class="ui three column grid rec-images">
+					</div>
+				</div>
+			</div>
+			<div class="field">
+				<div class="ui checkbox">
+					<input tabindex="0" class="hidden" type="checkbox">
+					<label>I agree to the Terms and Conditions</label>
+				</div>
+			</div>
+			<button class="ui button" type="submit">Submit</button>
+		</form>
+	</div>
+
+	<script type="text/javascript">
+		$(function () {
+
+			var fetchUrl = '{{ path('parseRecipeUrl') }}';
+			$('input[name="url"]').on('paste', function () {
+				setTimeout(function () {
+					$('input[name="url"]').closest('.input').addClass('loading');
+					console.info($('input[name="url"]').val());
+
+					$.get(fetchUrl, {url: $('input[name="url"]').val()}, function (response) {
+						console.info(response);
+						$('[name="description"]').val(response.description);
+
+						response.images.forEach(function (imgUrl) {
+							$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" /></div>');
+						});
+
+						$('input[name="url"]').closest('.input').removeClass('loading');
+					});
+
+				}, 0);
+			});
+		});
+	</script>
+
+{% endblock %}
