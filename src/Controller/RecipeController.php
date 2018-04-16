@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Flex\Response;
 
 class RecipeController extends Controller {
 
@@ -89,21 +90,15 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/show/{id}", name="showRecipe")
 	 */
 	public function showAction($id) {
-//		$product = $this->getDoctrine()
-//			->getRepository(Product::class)
-//			->find($id);
-//
-//		if (!$product) {
-//			throw $this->createNotFoundException(
-//				'No product found for id '.$id
-//			);
-//		}
-//
-//		return new Response('Check out this great product: '.$product->getName());
+		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
 
-		// or render a template
-		// in the template, print things with {{ product.name }}
-		// return $this->render('product/show.html.twig', ['product' => $product]);
+		if (!$recipe) {
+			throw $this->createNotFoundException(
+				'No product found for id '.$id
+			);
+		}
+
+		return $this->render('details.html.twig', ['recipe' => $recipe]);
 	}
 
 	/**

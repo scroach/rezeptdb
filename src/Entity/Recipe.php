@@ -117,6 +117,10 @@ class Recipe {
 		return $this->description;
 	}
 
+	public function getDescriptionParagraphs() {
+		return explode("\r\n", $this->description);
+	}
+
 	/**
 	 * @param mixed $description
 	 */
@@ -167,7 +171,7 @@ class Recipe {
 	}
 
 	/**
-	 * @return mixed
+	 * @return Image[]
 	 */
 	public function getImages() {
 		return $this->images;

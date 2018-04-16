@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+	<div class="ui center aligned grid">
+		<div class="twelve wide column">
+			<h1 class="ui header">{{ recipe.label }}</h1>
+			{% for tag in recipe.tags %}
+				<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="ui doubling stackable grid">
+		<div class="three wide column">
+			<div class="ui segment">
+				<h2>Zutaten</h2>
+				<div class="ui list">
+					{% for ingredient in recipe.ingredients %}
+						<div class="item">
+							<i class="right triangle icon"></i>
+							<div class="content">
+								<div class="header">{{ ingredient.amount }} - {{ ingredient.label }}</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		<div class="eight wide column">
+			<div class="ui segment">
+				<span class="ui orange right ribbon label"><i class="clock icon"></i>{{ recipe.effort }} min</span>
+				<h2>Beschreibung</h2>
+				{% for para in recipe.descriptionParagraphs %}
+					<p>{{ para }}</p>
+				{% endfor %}
+
+				<p>
+					<a href="{{ recipe.originUrl }}" target="_blank"><i
+								class="external alternate icon"></i> {{ recipe.originUrl }}</a>
+				</p>
+			</div>
+		</div>
+
+		<div class="five wide column">
+			<div class="ui segment">
+				<div id="gallery" style="display:none;">
+					{% for image in recipe.images %}
+						<img src="{{ image.url }}" />
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(function () {
+			$("#gallery").unitegallery({
+				gallery_theme: "compact",
+				theme_panel_position: "right"
+			});
+		});
+
+	</script>
+
+
+{% endblock %}
