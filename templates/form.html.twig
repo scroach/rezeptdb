@@ -1,26 +1,54 @@
 {% extends 'base.html.twig' %}
 
+
+{% form_theme form _self %}
+
+{% block string_widget %}
+	<div class="text_widget">
+		{% set type = type|default('number') %}
+		{{ block('form_widget_simple') }}
+	</div>
+{% endblock %}
+
+{% block form_widget_simple %}
+	{% set type = type|default('text') %}
+	<input
+			type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endblock %}
+
+{% block form_errors %}
+	{% if(errors|length) %}
+		<div class="ui error message">
+			<div class="header">Fehler</div>
+			{% for error in errors %}
+				<p>{{ error.message }}</p>
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endblock %}
+
 {% block body %}
+
 	<h1 class="ui center aligned header">Rezept anlegen</h1>
 
 	<div class="ui segment">
-		<form class="ui form">
+
+		{{ form_start(form) }}
+		{{ form_errors(form) }}
+		<div class="ui form error">
 			<div class="two fields">
 				<div class="field">
 					<label>URL</label>
 					<div class="ui fluid icon input">
-						<input placeholder="URL..." type="text" name="url">
+						<input placeholder="URL..." type="text" name="{{ form.originUrl.vars.full_name }}">
 						<i class="icon search"></i>
 					</div>
 				</div>
 				<div class="field">
-					<label>Tags</label>
+					<label><i class="tags icon"></i> Tags</label>
 					<div class="ui fluid right labeled left icon input">
-						<i class="tags icon"></i>
-						<input placeholder="Enter tags" type="text">
-						<a class="ui tag label">
-							Add Tag
-						</a>
+						{{ form_errors(form.tags) }}
+						{{ form_widget(form.tags) }}
 					</div>
 				</div>
 			</div>
@@ -30,47 +58,93 @@
 					<input placeholder="Enter tags" type="text">
 				</div>
 				<div class="eight wide field">
-					<label>Beschreibung</label>
-					<textarea name="description"></textarea>
+					{{ form_label(form.label) }}
+					{{ form_errors(form.label) }}
+					{{ form_widget(form.label) }}
+
+					{{ form_label(form.effort) }}
+					{{ form_errors(form.effort) }}
+
+					<div class="ui right labeled input">
+						<input placeholder="Aufwand in Minuten" type="number"
+							   name="{{ form.effort.vars.full_name }}"
+							   value="{{ form.effort.vars.full_name }}"
+							   required>
+						<div class="ui basic label"> Minuten</div>
+					</div>
+
+					{{ form_label(form.description) }}
+					{{ form_errors(form.description) }}
+					{{ form_widget(form.description) }}
 				</div>
 				<div class="six wide field">
 					<div class="ui three column grid rec-images">
 					</div>
 				</div>
 			</div>
-			<div class="field">
-				<div class="ui checkbox">
-					<input tabindex="0" class="hidden" type="checkbox">
-					<label>I agree to the Terms and Conditions</label>
-				</div>
-			</div>
 			<button class="ui button" type="submit">Submit</button>
-		</form>
+
+		</div>
+
+		{{ form_end(form, {'render_rest': false}) }}
 	</div>
 
 	<script type="text/javascript">
 		$(function () {
 
 			var fetchUrl = '{{ path('parseRecipeUrl') }}';
-			$('input[name="url"]').on('paste', function () {
-				setTimeout(function () {
-					$('input[name="url"]').closest('.input').addClass('loading');
-					console.info($('input[name="url"]').val());
+			var urlInput = $('input[name*="Url"]');
 
-					$.get(fetchUrl, {url: $('input[name="url"]').val()}, function (response) {
+			urlInput.on('paste', function () {
+				setTimeout(function () {
+					urlInput.closest('.input').addClass('loading');
+					$.get(fetchUrl, {url: urlInput.val()}, function (response) {
 						console.info(response);
-						$('[name="description"]').val(response.description);
+						$('#form_label').val(response.description);
+						$('#form_description').val(response.description);
 
 						response.images.forEach(function (imgUrl) {
-							$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" /></div>');
+							if (!imgUrl) {
+								return;
+							}
+
+							var input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
+							$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" />' + input + '</div>');
 						});
 
-						$('input[name="url"]').closest('.input').removeClass('loading');
+						urlInput.closest('.input').removeClass('loading');
 					});
 
 				}, 0);
 			});
+
+			$('body').on('click', '.rec-images.grid img', function () {
+				console.info('wwf');
+				var $input = $(this).closest('div').find('input');
+
+				if ($input.attr('disabled'))
+					$input.removeAttr('disabled');
+				else
+					$input.attr('disabled', 'disabled');
+			});
+
+			$('#form_tags').selectize({
+				delimiter: ',',
+				persist: false,
+				options: [{value: 'Huhn', text: 'Huhn'}, {value: 'BBQ', text: 'BBQ'}, {value: 'Rind', text: 'Rind'}],
+				create: function (input) {
+					return {
+						value: input,
+						text: input
+					}
+				}
+			});
 		});
 	</script>
+	<style type="text/css">
+		.selectize-control {
+			width: 100%;
+		}
+	</style>
 
 {% endblock %}

@@ -5,8 +5,7 @@
 {% block body %}
 
     <div class="ui segment">
-        <div class="ui four cards">
-
+        <div class="ui six doubling stackable cards">
             {% for recipe in recipes %}
                 {{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
 

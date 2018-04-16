@@ -3,10 +3,15 @@
 
 namespace App\Controller;
 
-
+use App\Entity\Image;
 use App\Entity\Recipe;
+use App\Entity\Tag;
 use App\Service\ChefkochDOMParser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,17 +31,62 @@ class RecipeController extends Controller {
 	/**
 	 * @Route("/recipes/add", name="addRecipe")
 	 */
-	public function addAction() {
-		$number = mt_rand(0, 100);
+	public function addAction(Request $request) {
+		// creates a task and gives it some dummy data for this example
+		$task = new Recipe();
+		$form = $this->createFormBuilder($task)
+			->add('label', TextType::class, ['label' => 'Titel', 'attr' => ['placeholder' => 'Supersaftige Rippchen']])
+			->add('description', TextareaType::class)
+			->add('originUrl', UrlType::class)
+			->add('ingredients', TextType::class)
+			->add('tags', TextType::class)
+			->add('effort', TextType::class, ['label' => 'Aufwand', 'attr' => ['placeholder' => '20 Minuten']])
+			->add('submit', SubmitType::class, ['label' => 'Rezept speichern'])
+			->getForm();
 
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$task` variable has also been updated
+			$task = $form->getData();
+
+			$tags = $task->getTags();
+			$tagObjects = [];
+
+
+			foreach (explode(',', $tags) as $tagName) {
+				$tag = new Tag();
+				$tag->setLabel($tagName);
+				$this->getDoctrine()->getManager()->persist($tag);
+				$tagObjects[] = $tag;
+			}
+
+			$images = [];
+			foreach ($_POST['images'] as $imageUrl) {
+				$image = new Image();
+				$image->setRecipe($task);
+				$image->setUrl($imageUrl);
+				$this->getDoctrine()->getManager()->persist($image);
+				$images[] = $image;
+			}
+
+			$task->setTags($tagObjects);
+
+			$this->getDoctrine()->getManager()->persist($task);
+			$this->getDoctrine()->getManager()->flush();
+
+			return $this->redirectToRoute('recipeIndex');
+		}
 
 		return $this->render('form.html.twig', array(
-			'number' => $number,
+			'form' => $form->createView(),
 		));
 	}
 
 	/**
-	 * @Route("/recipes/{id}", name="showRecipe")
+	 * @Route("/recipes/show/{id}", name="showRecipe")
 	 */
 	public function showAction($id) {
 //		$product = $this->getDoctrine()
@@ -57,6 +107,16 @@ class RecipeController extends Controller {
 	}
 
 	/**
+	 * @Route("/recipes/delete/{id}", name="deleteRecipe")
+	 */
+	public function delete($id) {
+		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
+		$this->getDoctrine()->getManager()->remove($recipe);
+		$this->getDoctrine()->getManager()->flush();
+		return $this->redirectToRoute('recipeIndex');
+	}
+
+	/**
 	 * @Route("/recipes/tags", name="listRecipeTags")
 	 */
 	public function listTags() {
@@ -72,8 +132,6 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/analyzeUrl", name="parseRecipeUrl")
 	 */
 	public function analyzeUrlAction(Request $request) {
-
-		require __DIR__.'/../Service/AbstractDOMParser.php';
 		// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
 		libxml_use_internal_errors(true);
 
@@ -81,6 +139,7 @@ class RecipeController extends Controller {
 		$result = $parser->analyzeUrl($request->query->get('url'));
 
 		libxml_clear_errors();
+
 		return new JsonResponse($result);
 	}
 

@@ -1,5 +1,5 @@
 {# @var recipe \App\Entity\Recipe #}
-<div class="ui fluid card">
+<div class="ui card">
 	<div class="image">
 		{% set image = recipe.images | first %}
 		{% if (image) %}
@@ -20,15 +20,14 @@
 		<div class="description">
 			<div class="ui list">
 				{% for ingredient in recipe.ingredients %}
-					<a class="item">
-						<i class="right htriangle icon"></i>
+					<div class="item">
+						<i class="right triangle icon"></i>
 						<div class="content">
 							<div class="header">{{ ingredient.amount }} - {{ ingredient.label }}</div>
 						</div>
-					</a>
+					</div>
 				{% endfor %}
 			</div>
-
 		</div>
 		<i class="tags icon"></i>
 		5 Tags
@@ -36,5 +35,6 @@
 	<div class="extra content">
 		<span class="right floated"><i class="clock icon"></i>{{ recipe.effort }} min</span>
 		<span><i class="tasks icon"></i>{{ recipe.effort }} Zutaten</span>
+		<a class="ui mini negative icon button" href="{{ path('deleteRecipe', {'id': recipe.id}) }}"><i class="ui trash icon"></i></a>
 	</div>
 </div>
