@@ -11,7 +11,9 @@ class ChefkochDOMParser extends AbstractDOMParser {
 		/** @var $image \DOMElement */
 		foreach ($doc->getElementsByTagName('a') as $image) {
 			if (strpos($image->getAttribute('class'), 'slideshow-imagelink') !== false) {
-				$images[] = $image->getAttribute('href');
+				if ($image->getAttribute('href')) {
+					$images[] = $image->getAttribute('href');
+				}
 			}
 		}
 		return $images;
@@ -43,4 +45,12 @@ class ChefkochDOMParser extends AbstractDOMParser {
 		return $ingredients;
 	}
 
+	protected function fetchTitle(\DOMDocument $doc): string {
+		/** @var $image \DOMElement */
+		foreach ($doc->getElementsByTagName('h1') as $heading) {
+			if (strpos($heading->getAttribute('class'), 'page-title') !== false) {
+				return $heading->nodeValue;
+			}
+		}
+	}
 }

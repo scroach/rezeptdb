@@ -62,7 +62,7 @@
 				</div>
 			</div>
 			<div class="fields">
-				<div class="four wide field">
+				<div class="four wide field ingredients">
 					{{ form_label(form.ingredients) }}
 					{{ form_errors(form.ingredients) }}
 					{{ form_widget(form.ingredients) }}
@@ -114,8 +114,13 @@
 					urlInput.closest('.input').addClass('loading');
 					$.get(fetchUrl, {url: urlInput.val()}, function (response) {
 						console.info(response);
-						$('#form_label').val(response.label);
+						$('#form_label').val(response.title);
 						$('#form_description').val(response.description);
+
+						clearIngredients();
+						response.ingredients.forEach(function (ingredient) {
+							addIngredient(ingredient.amount + ' ' + ingredient.label);
+						});
 
 						response.images.forEach(function (imgUrl) {
 							if (!imgUrl) {
@@ -154,23 +159,32 @@
 				}
 			});
 
-			$('.add-collection-item').click(function (e) {
-				e.preventDefault();
+			function clearIngredients() {
+				$('.ingredients [data-prototype]').empty();
+			}
 
-				var list = $($(this).attr('data-list'));
-				var counter = list.data('widget-counter') | list.children().length;
+			function addIngredient(value) {
+				var $list = $('.ingredients [data-prototype]');
+				var counter = $list.data('widget-counter') | $list.children().length;
 				if (!counter) {
-					counter = list.children().length;
+					counter = $list.children().length;
 				}
 
-				var newWidget = list.attr('data-prototype');
+				var newWidget = $list.attr('data-prototype');
 				newWidget = newWidget.replace(/__name__/g, counter);
 				counter++;
-				list.data(' widget-counter', counter);
+				$list.data(' widget-counter', counter);
 
-				var tags = list.attr('data-widget-tags') || '<div></div>';
+				var tags = $list.attr('data-widget-tags') || '<div></div>';
 				var newElem = $(tags).html(newWidget);
-				newElem.appendTo(list);
+
+				newElem.find('input').val(value);
+				newElem.appendTo($list);
+			}
+
+			$('.add-collection-item').click(function (e) {
+				e.preventDefault();
+				addIngredient();
 			});
 
 			$('body').on('click', '.remove-row', function (e) {

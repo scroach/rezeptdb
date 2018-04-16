@@ -12,11 +12,13 @@ abstract class AbstractDOMParser {
 		$images = $this->fetchImages($doc);
 		$ingredients = $this->fetchIngredients($doc);
 		$description = $this->fetchDescription($doc);
+		$title = $this->fetchTitle($doc);
 
 		return [
 			'images' => $images,
 			'ingredients' => $ingredients,
 			'description' => $description,
+			'title' => $title,
 		];
 	}
 
@@ -27,6 +29,8 @@ abstract class AbstractDOMParser {
 	}
 
 	protected abstract function fetchImages(\DOMDocument $doc): array;
+
+	protected abstract function fetchTitle(\DOMDocument $doc): string;
 
 	protected abstract function fetchIngredients(\DOMDocument $doc): array;
 
