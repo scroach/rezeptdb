@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -46,10 +47,12 @@ class Recipe {
 	 */
 	private $tags;
 
+	private $tagsString;
+
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Ingredient", mappedBy="recipe")
+	 * @ORM\OneToMany(targetEntity="App\Entity\Ingredient", mappedBy="recipe", cascade={"persist"}, orphanRemoval=true)
 	 */
-	private $ingredients;
+	private $ingredients = [];
 
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="recipe")
@@ -65,6 +68,16 @@ class Recipe {
 	 * @ORM\Column(type="datetime")
 	 */
 	private $modified;
+
+	/**
+	 * Recipe constructor.
+	 * @param $tags
+	 * @param array $ingredients
+	 */
+	public function __construct() {
+		$this->tags = new ArrayCollection();
+		$this->ingredients = new ArrayCollection();
+	}
 
 	public function getId() {
 		return $this->id;
@@ -143,7 +156,7 @@ class Recipe {
 	}
 
 	/**
-	 * @return mixed
+	 * @return Tag[]|ArrayCollection
 	 */
 	public function getTags() {
 		return $this->tags;
@@ -156,11 +169,50 @@ class Recipe {
 		$this->tags = $tags;
 	}
 
+	public function getTagsString() {
+		if ($this->tagsString) {
+			return $this->tagsString;
+		}
+
+		return implode(',', array_map(function (Tag $tag) {
+			return $tag->getLabel();
+		}, $this->tags->toArray()));
+	}
+
+	public function setTagsString(string $tags) {
+		return $this->tagsString = $tags;
+	}
+
 	/**
-	 * @return mixed
+	 * @return Ingredient[]|ArrayCollection
 	 */
 	public function getIngredients() {
 		return $this->ingredients;
+	}
+
+	public function getIngredientsText() {
+		$result = [];
+		foreach ($this->getIngredients() as $ingredient) {
+			$result[] = $ingredient->getAmount().' '.$ingredient->getLabel();
+		}
+		return $result;
+	}
+
+	public function setIngredientsText($ingredientsList) {
+		$this->ingredients->clear();
+		foreach ($ingredientsList as $ingredient) {
+			if ($ingredient) {
+				$this->ingredients->add(new Ingredient($this, $ingredient));
+			}
+		}
+	}
+
+	public function addIngredient(Ingredient $ingredient) {
+		$this->ingredients->add($ingredient);
+	}
+
+	public function removeIngredient(Ingredient $ingredient) {
+		$this->ingredients->removeElement($ingredient);
 	}
 
 	/**

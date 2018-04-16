@@ -4,7 +4,9 @@
 
 	<div class="ui center aligned grid">
 		<div class="twelve wide column">
-			<h1 class="ui header">{{ recipe.label }}</h1>
+			<h1 class="ui header">
+				{{ recipe.label }}
+			</h1>
 			{% for tag in recipe.tags %}
 				<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
 			{% endfor %}
@@ -20,7 +22,7 @@
 						<div class="item">
 							<i class="right triangle icon"></i>
 							<div class="content">
-								<div class="header">{{ ingredient.amount }} - {{ ingredient.label }}</div>
+								<div class="header">{{ ingredient.amount }} {{ ingredient.label }}</div>
 							</div>
 						</div>
 					{% endfor %}
@@ -38,6 +40,8 @@
 				<p>
 					<a href="{{ recipe.originUrl }}" target="_blank"><i
 								class="external alternate icon"></i> {{ recipe.originUrl }}</a>
+					<a href="{{ path('editRecipe', {'id': recipe.id}) }}" class="ui mini button right"><i
+								class="edit icon"></i> Bearbeiten</a>
 				</p>
 			</div>
 		</div>
@@ -46,7 +50,7 @@
 			<div class="ui segment">
 				<div id="gallery" style="display:none;">
 					{% for image in recipe.images %}
-						<img src="{{ image.url }}" />
+						<img src="{{ image.url }}"/>
 					{% endfor %}
 				</div>
 			</div>

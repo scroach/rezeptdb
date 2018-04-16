@@ -29,12 +29,11 @@
 				{% endfor %}
 			</div>
 		</div>
-		<i class="tags icon"></i>
-		5 Tags
 	</div>
 	<div class="extra content">
 		<span class="right floated"><i class="clock icon"></i>{{ recipe.effort }} min</span>
-		<span><i class="tasks icon"></i>{{ recipe.effort }} Zutaten</span>
-		<a class="ui mini negative icon button" href="{{ path('deleteRecipe', {'id': recipe.id}) }}"><i class="ui trash icon"></i></a>
+		<span><i class="tasks icon"></i>{{ recipe.ingredients|length }} Zutaten</span>
+		<a class="ui mini negative icon button" href="{{ path('deleteRecipe', {'id': recipe.id}) }}"><i
+					class="ui trash icon"></i></a>
 	</div>
 </div>

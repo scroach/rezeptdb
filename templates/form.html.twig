@@ -40,22 +40,27 @@
 				<div class="field">
 					<label>URL</label>
 					<div class="ui fluid icon input">
-						<input placeholder="URL..." type="text" name="{{ form.originUrl.vars.full_name }}">
+						<input placeholder="URL..." type="text" name="{{ form.originUrl.vars.full_name }}"
+							   value="{{ form.originUrl.vars.value }}">
 						<i class="icon search"></i>
 					</div>
 				</div>
 				<div class="field">
 					<label><i class="tags icon"></i> Tags</label>
 					<div class="ui fluid right labeled left icon input">
-						{{ form_errors(form.tags) }}
-						{{ form_widget(form.tags) }}
+						{{ form_errors(form.tagsString) }}
+						{{ form_widget(form.tagsString) }}
 					</div>
 				</div>
 			</div>
 			<div class="fields">
-				<div class="two wide field">
-					<label>Zutaten</label>
-					<input placeholder="Enter tags" type="text">
+				<div class="four wide field">
+					{{ form_label(form.ingredients) }}
+					{{ form_errors(form.ingredients) }}
+					{{ form_widget(form.ingredients) }}
+
+					<a class="add-collection-item" data-list="#{{ form.ingredients.vars.id }}" href="#"><i class="plus icon"></i>
+						Weitere Zutat</a>
 				</div>
 				<div class="eight wide field">
 					{{ form_label(form.label) }}
@@ -68,7 +73,7 @@
 					<div class="ui right labeled input">
 						<input placeholder="Aufwand in Minuten" type="number"
 							   name="{{ form.effort.vars.full_name }}"
-							   value="{{ form.effort.vars.full_name }}"
+							   value="{{ form.effort.vars.value }}"
 							   required>
 						<div class="ui basic label"> Minuten</div>
 					</div>
@@ -100,7 +105,7 @@
 					urlInput.closest('.input').addClass('loading');
 					$.get(fetchUrl, {url: urlInput.val()}, function (response) {
 						console.info(response);
-						$('#form_label').val(response.description);
+						$('#form_label').val(response.label);
 						$('#form_description').val(response.description);
 
 						response.images.forEach(function (imgUrl) {
@@ -128,16 +133,36 @@
 					$input.attr('disabled', 'disabled');
 			});
 
-			$('#form_tags').selectize({
+			$('#form_tagsString').selectize({
 				delimiter: ',',
 				persist: false,
-				options: [{value: 'Huhn', text: 'Huhn'}, {value: 'BBQ', text: 'BBQ'}, {value: 'Rind', text: 'Rind'}],
+				options: {{ existingTags|json_encode|raw }},
 				create: function (input) {
 					return {
 						value: input,
 						text: input
 					}
 				}
+			});
+
+
+			$('.add-collection-item').click(function (e) {
+				e.preventDefault();
+
+				var list = $($(this).attr('data-list'));
+				var counter = list.data('widget-counter') | list.children().length;
+				if (!counter) {
+					counter = list.children().length;
+				}
+
+				var newWidget = list.attr('data-prototype');
+				newWidget = newWidget.replace(/__name__/g, counter);
+				counter++;
+				list.data(' widget-counter', counter);
+
+				var tags = list.attr('data-widget-tags') || '<div></div>';
+				var newElem = $(tags).html(newWidget);
+				newElem.appendTo(list);
 			});
 		});
 	</script>

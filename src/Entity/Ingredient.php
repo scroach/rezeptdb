@@ -31,7 +31,21 @@ class Ingredient {
 	 */
 	private $label;
 
+	/**
+	 * Ingredient constructor.
+	 * @param $amount
+	 * @param $label
+	 */
+	public function __construct(Recipe $recipe = null, $label = null, $amount = null) {
+		$this->recipe = $recipe;
+		$this->amount = $amount;
+		$this->label = $label;
+	}
+
 	public function getId() {
+		return $this->id;
+	}
+	public function setId($id) {
 		return $this->id;
 	}
 
