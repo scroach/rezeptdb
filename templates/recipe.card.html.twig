@@ -1,31 +1,23 @@
 {# @var recipe \App\Entity\Recipe #}
 <div class="ui card">
 	<div class="image">
-		{% set image = recipe.images | first %}
-		{% if (image) %}
-			<img src="{{ image.url }}">
-		{% else %}
-			<img src="https://foodtango.com.au/img/ui/noimage.png">
-		{% endif %}
+		<a href="{{ path('showRecipe', {'id': recipe.id}) }}">
+			{% set image = recipe.images | first %}
+			{% if (image) %}
+				<img src="{{ image.url }}">
+			{% else %}
+				<img src="https://foodtango.com.au/img/ui/noimage.png">
+			{% endif %}
+		</a>
 	</div>
 	<div class="content">
 		<div class="header">
 			<a class="" href="{{ path('showRecipe', {'id': recipe.id}) }}">{{ recipe.label }}</a>
 		</div>
 		<div class="meta">
-			{% for tag in recipe.tags %}
-				<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
-			{% endfor %}
-		</div>
-		<div class="description">
-			<div class="ui list">
-				{% for ingredient in recipe.ingredients %}
-					<div class="item">
-						<i class="right triangle icon"></i>
-						<div class="content">
-							<div class="header">{{ ingredient.amount }} - {{ ingredient.label }}</div>
-						</div>
-					</div>
+			<div class="ui labels">
+				{% for tag in recipe.tags %}
+					<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
 				{% endfor %}
 			</div>
 		</div>
