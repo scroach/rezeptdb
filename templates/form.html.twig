@@ -27,6 +27,14 @@
 	{% endif %}
 {% endblock %}
 
+
+{% block _form_ingredients_entry_widget %}
+	<div class="ui icon input">
+		{{ form_widget(form.label) }}
+		<i class="link times red icon remove-row"></i>
+	</div>
+{% endblock %}
+
 {% block body %}
 
 	<h1 class="ui center aligned header">Rezept anlegen</h1>
@@ -59,8 +67,9 @@
 					{{ form_errors(form.ingredients) }}
 					{{ form_widget(form.ingredients) }}
 
-					<a class="add-collection-item" data-list="#{{ form.ingredients.vars.id }}" href="#"><i class="plus icon"></i>
-						Weitere Zutat</a>
+					<a class="add-collection-item small ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
+						<i class="plus icon"></i> Weitere Zutat
+					</a>
 				</div>
 				<div class="eight wide field">
 					{{ form_label(form.label) }}
@@ -145,7 +154,6 @@
 				}
 			});
 
-
 			$('.add-collection-item').click(function (e) {
 				e.preventDefault();
 
@@ -163,6 +171,11 @@
 				var tags = list.attr('data-widget-tags') || '<div></div>';
 				var newElem = $(tags).html(newWidget);
 				newElem.appendTo(list);
+			});
+
+			$('body').on('click', '.remove-row', function (e) {
+				e.preventDefault();
+				$(this).closest('div').remove();
 			});
 		});
 	</script>
