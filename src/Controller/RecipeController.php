@@ -7,7 +7,9 @@ use App\Entity\Image;
 use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Form\Type\IngredientType;
+use App\Service\AbstractDOMParser;
 use App\Service\ChefkochDOMParser;
+use App\Service\IchKocheDOMParser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,6 +21,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RecipeController extends Controller {
+
+	/**
+	 * @var AbstractDOMParser[]
+	 */
+	private $domParsers = [];
+
+	public function __construct() {
+		$this->domParsers = [
+			new ChefkochDOMParser(),
+			new IchKocheDOMParser(),
+		];
+	}
+
 
 	/**
 	 * @Route("/recipes", name="recipeIndex")
@@ -95,15 +110,24 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/analyzeUrl", name="parseRecipeUrl")
 	 */
 	public function analyzeUrlAction(Request $request) {
-		// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
-		libxml_use_internal_errors(true);
+		$url = $request->query->get('url');
 
-		$parser = new ChefkochDOMParser();
-		$result = $parser->analyzeUrl($request->query->get('url'));
+		/** @var AbstractDOMParser $domParser */
+		foreach ($this->domParsers as $domParser) {
+			if ($domParser->isApplicableForUrl($url)) {
+				// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
+				libxml_use_internal_errors(true);
 
-		libxml_clear_errors();
+				$result = $domParser->analyzeUrl($url);
 
-		return new JsonResponse($result);
+				libxml_clear_errors();
+
+				return new JsonResponse($result);
+			}
+		}
+
+		throw new \Exception('couldnt find any dom parser for the provided url');
+
 	}
 
 	/**

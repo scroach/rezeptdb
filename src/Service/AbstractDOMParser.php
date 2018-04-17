@@ -36,5 +36,7 @@ abstract class AbstractDOMParser {
 
 	protected abstract function fetchDescription(\DOMDocument $doc): string;
 
+	public abstract function isApplicableForUrl(string $url): bool;
+
 
 }
