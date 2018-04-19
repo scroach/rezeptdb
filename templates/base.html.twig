@@ -61,6 +61,20 @@
 		max-height: 200px;
 	}
 
+	.rec-images .column .icon {
+		position: absolute;
+		top: 20px;
+		right: 15px;
+		font-size: 20px;
+		color: #006f0b;
+		text-shadow: 0 0 5px white;
+		display:none;
+	}
+
+	.rec-images .column:hover .icon, .rec-images .column.active .icon {
+		display:block;
+	}
+
 	.ui.cards > .card > .image img {
 		object-fit: cover;
 		width: 100%;
