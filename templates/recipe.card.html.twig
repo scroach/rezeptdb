@@ -17,15 +17,13 @@
 		<div class="meta">
 			<div class="ui labels">
 				{% for tag in recipe.tags %}
-					<a class="ui label" href="{{ path('recipeByTag', {'tag': tag.label}) }}">{{ tag.label }}</a>
+					<a class="ui label" href="{{ path('recipeByTag', {'tagLabel': tag.label}) }}">{{ tag.label }}</a>
 				{% endfor %}
 			</div>
 		</div>
 	</div>
 	<div class="extra content">
 		<span class="right floated"><i class="clock icon"></i>{{ recipe.effort }} min</span>
-		<span><i class="tasks icon"></i>{{ recipe.ingredients|length }} Zutaten</span>
-		<a class="ui mini negative icon button" href="{{ path('deleteRecipe', {'id': recipe.id}) }}"><i
-					class="ui trash icon"></i></a>
+		<span class="green"><i class="tasks icon"></i>{{ recipe.ingredients|length }} Zutaten</span>
 	</div>
 </div>

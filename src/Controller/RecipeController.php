@@ -9,6 +9,7 @@ use App\Entity\Tag;
 use App\Form\Type\IngredientType;
 use App\Service\AbstractDOMParser;
 use App\Service\ChefkochDOMParser;
+use App\Service\GuteKuecheDOMParser;
 use App\Service\IchKocheDOMParser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -31,6 +32,7 @@ class RecipeController extends Controller {
 		$this->domParsers = [
 			new ChefkochDOMParser(),
 			new IchKocheDOMParser(),
+			new GuteKuecheDOMParser(),
 		];
 	}
 
@@ -101,9 +103,15 @@ class RecipeController extends Controller {
 	}
 
 	/**
-	 * @Route("/recipes/tags/{tag}", name="recipeByTag")
+	 * @Route("/recipes/tags/{tagLabel}", name="recipeByTag")
 	 */
-	public function showByTag($id) {
+	public function showByTag($tagLabel) {
+		$tag = $this->getDoctrine()->getRepository(Tag::class)->findOneBy(['label' => $tagLabel]);
+		$builder = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r');
+		$recipes = $builder->join('r.tags', 't')->where('t = :tag')->setParameter('tag', $tag)->getQuery()->getResult();
+		return $this->render('index.html.twig', array(
+			'recipes' => $recipes,
+		));
 	}
 
 	/**
