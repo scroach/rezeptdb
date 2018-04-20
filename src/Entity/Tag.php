@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,6 +22,12 @@ class Tag {
 	 */
 	private $label;
 
+	/**
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Recipe")
+	 * @ORM\JoinTable(name="recipes_tags")
+	 */
+	private $recipes;
+
 	public function getId() {
 		return $this->id;
 	}
@@ -33,6 +40,20 @@ class Tag {
 		$this->label = $label;
 
 		return $this;
+	}
+
+	/**
+	 * @return Recipe[]|ArrayCollection
+	 */
+	public function getRecipes() {
+		return $this->recipes;
+	}
+
+	/**
+	 * @param Recipe[]|ArrayCollection $recipes
+	 */
+	public function setRecipes($recipes): void {
+		$this->recipes = $recipes;
 	}
 
 }

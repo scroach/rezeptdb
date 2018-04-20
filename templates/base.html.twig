@@ -26,7 +26,7 @@
 <div class="ui stackable labeled icon container menu">
 	<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
 	<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
-	<a class="disabled item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+	<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
 </div>
 
 {% block body %}{% endblock %}
@@ -68,11 +68,11 @@
 		font-size: 20px;
 		color: #006f0b;
 		text-shadow: 0 0 5px white;
-		display:none;
+		display: none;
 	}
 
 	.rec-images .column:hover .icon, .rec-images .column.active .icon {
-		display:block;
+		display: block;
 	}
 
 	.rec-images-container {

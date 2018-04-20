@@ -106,6 +106,10 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/tags", name="listRecipeTags")
 	 */
 	public function listTags() {
+		$tags = $this->getDoctrine()->getRepository(Tag::class)->findAll();
+		return $this->render('tags.html.twig', array(
+			'tags' => $tags,
+		));
 	}
 
 	/**

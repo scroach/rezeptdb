@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tags{% endblock %}
+
+{% block body %}
+
+    <div class="ui segment">
+        <div class="ui six doubling stackable cards">
+            {% for tag in tags %}
+                {{ include('tag.card.html.twig', { 'recipe': tag }) }}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

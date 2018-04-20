@@ -1,0 +1,25 @@
+{# @var tag \App\Entity\Tag #}
+<div class="ui card">
+	<div class="image">
+		<a href="{{ path('recipeByTag', {'tagLabel': tag.label}) }}">
+			{% set image = random(recipe.recipes).images | first %}
+			{% if (image) %}
+				{% if image.localFileName %}
+					<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+				{% else %}
+					<img src="{{ image.url }}"/>
+				{% endif %}
+			{% else %}
+				<img src="https://foodtango.com.au/img/ui/noimage.png">
+			{% endif %}
+		</a>
+	</div>
+	<div class="content">
+		<div class="header">
+			<a class="" href="{{ path('recipeByTag', {'tagLabel': tag.label}) }}">{{ recipe.label }}</a>
+		</div>
+	</div>
+	<div class="extra content">
+		<span class="right floated"><i class="images icon"></i>{{ tag.recipes.count }} Rezepte</span>
+	</div>
+</div>
