@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -47,8 +48,6 @@ class Recipe {
 	 */
 	private $tags;
 
-	private $tagsString;
-
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Ingredient", mappedBy="recipe", cascade={"persist"}, orphanRemoval=true)
 	 */
@@ -70,6 +69,13 @@ class Recipe {
 	private $modified;
 
 	/**
+	 * Property for file uploads
+	 * @var null|UploadedFile[]
+	 */
+	private $file = null;
+	private $tagsString;
+
+	/**
 	 * Recipe constructor.
 	 * @param $tags
 	 * @param array $ingredients
@@ -77,6 +83,7 @@ class Recipe {
 	public function __construct() {
 		$this->tags = new ArrayCollection();
 		$this->ingredients = new ArrayCollection();
+		$this->images = new ArrayCollection();
 	}
 
 	public function getId() {
@@ -223,7 +230,7 @@ class Recipe {
 	}
 
 	/**
-	 * @return Image[]
+	 * @return Image[]|ArrayCollection
 	 */
 	public function getImages() {
 		return $this->images;
@@ -236,5 +243,17 @@ class Recipe {
 		$this->images = $images;
 	}
 
+	public function addImage(Image $image) {
+		$this->images->add($image);
+	}
+
+
+	public function getFiles() {
+		return $this->file;
+	}
+
+	public function setFiles($images) {
+		$this->file = $images;
+	}
 
 }

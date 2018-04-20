@@ -26,6 +26,11 @@ class Image {
 	 */
 	private $url;
 
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	private $localFileName;
+
 
 	public function getId() {
 		return $this->id;
@@ -57,6 +62,20 @@ class Image {
 	 */
 	public function setUrl($url): void {
 		$this->url = $url;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLocalFileName() {
+		return $this->localFileName;
+	}
+
+	/**
+	 * @param mixed $localFileName
+	 */
+	public function setLocalFileName($localFileName): void {
+		$this->localFileName = $localFileName;
 	}
 
 

@@ -78,7 +78,6 @@
 
 					{{ form_label(form.effort) }}
 					{{ form_errors(form.effort) }}
-
 					<div class="ui right labeled input">
 						<input placeholder="Aufwand in Minuten" type="number"
 							   name="{{ form.effort.vars.full_name }}"
@@ -86,6 +85,10 @@
 							   required>
 						<div class="ui basic label"> Minuten</div>
 					</div>
+
+					{{ form_label(form.files) }}
+					{{ form_errors(form.files) }}
+					{{ form_widget(form.files) }}
 
 					{{ form_label(form.description) }}
 					{{ form_errors(form.description) }}

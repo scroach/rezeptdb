@@ -4,7 +4,11 @@
 		<a href="{{ path('showRecipe', {'id': recipe.id}) }}">
 			{% set image = recipe.images | first %}
 			{% if (image) %}
-				<img src="{{ image.url }}">
+				{% if image.localFileName %}
+					<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+				{% else %}
+					<img src="{{ image.url }}"/>
+				{% endif %}
 			{% else %}
 				<img src="https://foodtango.com.au/img/ui/noimage.png">
 			{% endif %}
