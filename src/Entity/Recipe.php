@@ -75,6 +75,8 @@ class Recipe {
 	private $file = null;
 	private $tagsString;
 
+	private $searchRating = 0;
+
 	/**
 	 * Recipe constructor.
 	 * @param $tags
@@ -254,6 +256,20 @@ class Recipe {
 
 	public function setFiles($images) {
 		$this->file = $images;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSearchRating(): float {
+		return $this->searchRating;
+	}
+
+	/**
+	 * @param float $searchRating
+	 */
+	public function setSearchRating(float $searchRating): void {
+		$this->searchRating = $searchRating;
 	}
 
 }

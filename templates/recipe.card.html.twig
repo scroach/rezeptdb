@@ -1,6 +1,10 @@
 {# @var recipe \App\Entity\Recipe #}
 <div class="ui card">
 	<div class="image">
+		{% if recipe.searchRating %}
+			<a class="ui green right ribbon label">{{ (recipe.searchRating *100) |number_format(0, '.', ',') }} % Übereinstimmung</a>
+		{% endif %}
+
 		<a href="{{ path('showRecipe', {'id': recipe.id}) }}">
 			{% set image = recipe.images | first %}
 			{% if (image) %}

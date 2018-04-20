@@ -291,4 +291,73 @@ class RecipeController extends Controller {
 		rename($localPath, $localPath.'.'.$ext);
 		$image->setLocalFileName(basename($localPath.'.'.$ext));
 	}
+
+
+	/**
+	 * @Route("/recipes/searchByIngredients", name="searchByIngredients")
+	 */
+	public function searchByIngredients(Request $request) {
+		$data = ['ingredients' => ['', '', '']];
+		$formBuilder = $this->createFormBuilder($data)->add('ingredients', CollectionType::class, array(
+			'label' => 'Zutaten',
+			'allow_add' => true,
+			'allow_delete' => true,
+			'entry_type' => TextType::class,
+			'entry_options' => array(
+				'label' => false,
+				'required' => false,
+				'attr' => ['placeholder' => 'Lachs, Bacon, Käse, ...']
+			),
+		));
+
+		$form = $formBuilder->getForm();
+		$form->handleRequest($request);
+		$recipes = [];
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			$ingredients = array_filter($form->getData()['ingredients'], function ($ingredient) {
+				return !empty($ingredient);
+			});
+
+			$recipesDB = $this->getDoctrine()->getRepository(Recipe::class)->findAll();
+			$recipes = [];
+			foreach ($recipesDB as $recipe) {
+				$recipe->setSearchRating($this->rateRecipeByIngriedientsFilter($recipe, $ingredients));
+				if ($recipe->getSearchRating() > 0) {
+					$recipes[] = $recipe;
+				}
+			}
+			usort($recipes, [$this, 'sortRecipesByRating']);
+		}
+
+		return $this->render('searchForm.html.twig', array(
+			'form' => $form->createView(),
+			'recipes' => $recipes,
+		));
+	}
+
+	private function sortRecipesByRating(Recipe $rec1, Recipe $rec2) {
+		return ($rec1->getSearchRating() <=> $rec2->getSearchRating()) * -1;
+	}
+
+	/**
+	 * Returns a percentage of ingredients matched
+	 * @param Recipe $recipe
+	 * @param array $wantedIngredients
+	 * @return float|int
+	 */
+	private function rateRecipeByIngriedientsFilter(Recipe $recipe, array $wantedIngredients) {
+		$matchedIngredients = 0;
+
+		foreach ($wantedIngredients as $wantedIngredient) {
+			foreach ($recipe->getIngredients() as $ingredient) {
+				if (strpos($ingredient->getLabel(), $wantedIngredient) !== false) {
+					$matchedIngredients++;
+					break;
+				}
+			}
+		}
+
+		return $matchedIngredients / count($wantedIngredients);
+	}
 }

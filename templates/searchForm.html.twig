@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+
+{% form_theme form _self %}
+
+{% block string_widget %}
+	<div class="text_widget">
+		{% set type = type|default('number') %}
+		{{ block('form_widget_simple') }}
+	</div>
+{% endblock %}
+
+{% block form_widget_simple %}
+	{% set type = type|default('text') %}
+	<input
+			type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endblock %}
+
+{% block form_errors %}
+	{% if(errors|length) %}
+		<div class="ui error message">
+			<div class="header">Fehler</div>
+			{% for error in errors %}
+				<p>{{ error.message }}</p>
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block body %}
+
+	<h1 class="ui center aligned header">Was hast du im Kühlschrank?</h1>
+
+	<div class="ui segment">
+		{{ form_start(form) }}
+		{{ form_errors(form) }}
+		<div class="ui form">
+			<div class="fields">
+				<div class="field">
+					{{ form_label(form.ingredients) }}
+					{{ form_errors(form.ingredients) }}
+					{{ form_widget(form.ingredients) }}
+
+					<a class="add-collection-item small ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
+						<i class="plus icon"></i> Weitere Zutat
+					</a>
+				</div>
+			</div>
+			<button class="ui button" type="submit">Submit</button>
+		</div>
+		{{ form_end(form, {'render_rest': false}) }}
+	</div>
+
+	<div class="ui segment">
+		<div class="ui six doubling stackable cards">
+			{% for recipe in recipes %}
+				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
+			{% endfor %}
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(function () {
+
+			var addIngredient = function() {
+				var $list = $(this).siblings('[data-prototype]');
+				var counter = $list.data('widget-counter') | $list.children().length;
+				if (!counter) {
+					counter = $list.children().length;
+				}
+
+				var newWidget = $list.attr('data-prototype');
+				newWidget = newWidget.replace(/__name__/g, counter);
+				counter++;
+				$list.data(' widget-counter', counter);
+
+				var tags = $list.attr('data-widget-tags') || '<div></div>';
+				var newElem = $(tags).html(newWidget);
+
+				newElem.find('input').val();
+				newElem.appendTo($list);
+			}
+
+			$('.add-collection-item').on('click', addIngredient);
+			$('body').on('click', '.remove-row', function (e) {
+				e.preventDefault();
+				$(this).closest('div').remove();
+			});
+		});
+	</script>
+	<style type="text/css">
+		.selectize-control {
+			width: 100%;
+		}
+	</style>
+
+{% endblock %}
