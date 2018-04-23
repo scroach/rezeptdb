@@ -23,13 +23,18 @@
 </head>
 <body>
 
-<div class="ui stackable labeled icon container menu">
-	<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
-	<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
-	<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+<div class="ui container">
+	<div class="ui labeled computer icon menu">
+		<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
+		<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+		<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+		<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i> Zutatensuche</a>
+	</div>
+
+	{% block body %}{% endblock %}
 </div>
 
-{% block body %}{% endblock %}
+
 {% block javascripts %}{% endblock %}
 
 <style>

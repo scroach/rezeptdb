@@ -5,7 +5,7 @@
 {% block body %}
 
     <div class="ui segment">
-        <div class="ui six doubling stackable cards">
+        <div class="ui four doubling stackable cards">
             {% for tag in tags %}
                 {{ include('tag.card.html.twig', { 'recipe': tag }) }}
             {% endfor %}
