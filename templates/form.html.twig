@@ -90,6 +90,11 @@
 					{{ form_errors(form.files) }}
 					{{ form_widget(form.files) }}
 
+					<div class="field">
+						<div class="gallery ui three column grid">
+						</div>
+					</div>
+
 					{{ form_label(form.description) }}
 					{{ form_errors(form.description) }}
 					{{ form_widget(form.description) }}
@@ -195,11 +200,35 @@
 				e.preventDefault();
 				$(this).closest('div').remove();
 			});
+
+
+			// Multiple images preview in browser
+			var imagesPreview = function (input, placeToInsertImagePreview) {
+				if (input.files) {
+					var filesAmount = input.files.length;
+					for (var i = 0; i < filesAmount; i++) {
+						var reader = new FileReader();
+						reader.onload = function (event) {
+							$('<div class="column"><img src="' + event.target.result + '"></div>').appendTo(placeToInsertImagePreview);
+						};
+						reader.readAsDataURL(input.files[i]);
+					}
+				}
+
+			};
+
+			$('#form_files').on('change', function () {
+				imagesPreview(this, 'div.gallery');
+			});
 		});
 	</script>
 	<style type="text/css">
 		.selectize-control {
 			width: 100%;
+		}
+
+		.gallery img {
+			max-width: 100%;
 		}
 	</style>
 

@@ -303,10 +303,11 @@ class RecipeController extends Controller {
 			'allow_add' => true,
 			'allow_delete' => true,
 			'entry_type' => TextType::class,
+			'attr' => ['class' => 'ui three column grid'],
 			'entry_options' => array(
-				'label' => false,
+			'label' => false,
 				'required' => false,
-				'attr' => ['placeholder' => 'Lachs, Bacon, Käse, ...']
+				'attr' => ['placeholder' => 'Lachs, Bacon, Käse, ...', 'class' => 'column']
 			),
 		));
 

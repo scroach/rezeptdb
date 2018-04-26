@@ -1,31 +1,20 @@
 {% extends 'base.html.twig' %}
 
-
 {% form_theme form _self %}
-
-{% block string_widget %}
-	<div class="text_widget">
-		{% set type = type|default('number') %}
-		{{ block('form_widget_simple') }}
-	</div>
-{% endblock %}
 
 {% block form_widget_simple %}
 	{% set type = type|default('text') %}
-	<input
-			type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+	<input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 {% endblock %}
 
-{% block form_errors %}
-	{% if(errors|length) %}
-		<div class="ui error message">
-			<div class="header">Fehler</div>
-			{% for error in errors %}
-				<p>{{ error.message }}</p>
-			{% endfor %}
-		</div>
-	{% endif %}
-{% endblock %}
+
+{%- block form_row -%}
+	<div class="column">
+		{{- form_label(form) -}}
+		{{- form_errors(form) -}}
+		{{- form_widget(form) -}}
+	</div>
+{%- endblock form_row -%}
 
 {% block body %}
 
@@ -35,35 +24,42 @@
 		{{ form_start(form) }}
 		{{ form_errors(form) }}
 		<div class="ui form">
-			<div class="fields">
-				<div class="field">
-					{{ form_label(form.ingredients) }}
-					{{ form_errors(form.ingredients) }}
-					{{ form_widget(form.ingredients) }}
+			<div class="row">
 
-					<a class="add-collection-item small ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
+				{{ form_label(form.ingredients) }}
+				{{ form_errors(form.ingredients) }}
+			</div>
+			{{ form_widget(form.ingredients) }}
+
+			<div class="row">
+				<div class="column">
+
+					<a class="add-collection-item ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
 						<i class="plus icon"></i> Weitere Zutat
 					</a>
+					<button class="ui green right floated button" type="submit"><i class="ui search icon"></i> Suchen
 				</div>
+				</button>
 			</div>
-			<button class="ui button" type="submit">Submit</button>
 		</div>
 		{{ form_end(form, {'render_rest': false}) }}
 	</div>
 
-	<div class="ui segment">
-		<div class="ui six doubling stackable cards">
-			{% for recipe in recipes %}
-				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
-			{% endfor %}
+	{% if recipes %}
+		<div class="ui segment">
+			<div class="ui four doubling stackable cards">
+				{% for recipe in recipes %}
+					{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
+				{% endfor %}
+			</div>
 		</div>
-	</div>
+	{% endif %}
 
 	<script type="text/javascript">
 		$(function () {
 
-			var addIngredient = function() {
-				var $list = $(this).siblings('[data-prototype]');
+			var addIngredient = function () {
+				var $list = $(this).closest('form').find('[data-prototype]');
 				var counter = $list.data('widget-counter') | $list.children().length;
 				if (!counter) {
 					counter = $list.children().length;
@@ -74,8 +70,8 @@
 				counter++;
 				$list.data(' widget-counter', counter);
 
-				var tags = $list.attr('data-widget-tags') || '<div></div>';
-				var newElem = $(tags).html(newWidget);
+				var tags = $list.attr('data-widget-tags') || '';
+				var newElem = $(newWidget);
 
 				newElem.find('input').val();
 				newElem.appendTo($list);
