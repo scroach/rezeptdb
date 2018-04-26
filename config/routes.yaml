@@ -2,10 +2,5 @@
 #    path: /
 #    defaults: { _controller: 'App\Controller\DefaultController::index' }
 
-#app_lucky_number:
-#    path: /lucky/number
-#    controller: App\Controller\LuckyController::number
-
-app_lucky_number:
-    path: /lucky/number
-    controller: App\Controller\RecipeController::index
+logout:
+    path: /logout
