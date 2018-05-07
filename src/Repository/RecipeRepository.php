@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Product;
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -13,11 +12,50 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Recipe[]    findAll()
  * @method Recipe[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RecipeRepository extends ServiceEntityRepository
-{
-    public function __construct(RegistryInterface $registry)
-    {
-        parent::__construct($registry, Recipe::class);
-    }
+class RecipeRepository extends ServiceEntityRepository {
+	public function __construct(RegistryInterface $registry) {
+		parent::__construct($registry, Recipe::class);
+	}
+
+	public function search(string $searchString) {
+
+		$matchFulltext = "MATCH_AGAINST(r.label, r.description, r.originUrl, :search 'WTH QUERY EXPANSION') + MATCH_AGAINST(t.label, :search)+MATCH_AGAINST(i.label, :search)";
+		$qb = $this->createQueryBuilder('r');
+		$query = $qb
+			->select("MAX($matchFulltext) AS recipeScore, r as recipe")
+			->join('r.ingredients', 'i')
+			->join('r.tags', 't')
+			->where("$matchFulltext> 0")
+			->groupBy('r.id')
+			->orderBy('recipeScore', 'DESC')
+			->setParameter('search', $searchString)
+			->getQuery();
+
+		$result = $query->getResult();
+		$alreadyFoundIds = [];
+
+		$recipes = [];
+		if (count($result)) {
+			$maxScore = $result[0]['recipeScore'];
+			foreach ($result as $resultObj) {
+				$resultObj['recipe']->setSearchRating($resultObj['recipeScore'] / $maxScore);
+				$alreadyFoundIds[] = $resultObj['recipe']->getId();
+				$recipes[] = $resultObj['recipe'];
+			}
+		}
+
+		$additional = $this->createQueryBuilder('r')
+			->where('(r.description LIKE :search OR r.label LIKE :search) AND r.id NOT IN (:ids)')
+			->setParameter('search', "%$searchString%")
+			->setParameter('ids', $alreadyFoundIds)
+			->getQuery()->getResult();
+		/** @var Recipe $recipe */
+		foreach ($additional as $recipe) {
+			$recipe->setSearchRating(0.01);
+			$recipes[] = $recipe;
+		}
+
+		return $recipes;
+	}
 
 }

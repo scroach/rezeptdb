@@ -42,7 +42,6 @@ class RecipeController extends Controller {
 		];
 	}
 
-
 	/**
 	 * @Route("/recipes", name="recipeIndex")
 	 */
@@ -54,10 +53,26 @@ class RecipeController extends Controller {
 	}
 
 	/**
+	 * @Route("/recipes/search/{searchString}", name="searchRecipe")
+	 */
+	public function searchAction(Request $request, $searchString = null) {
+		if ($request->isMethod('post')) {
+			$searchString = $request->request->get('search');
+			return $this->redirectToRoute('searchRecipe', ['searchString' => urlencode($searchString)]);
+		}
+
+		$searchString = urldecode($searchString);
+		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->search($searchString);
+		return $this->render('searchResults.html.twig', array(
+			'recipes' => $recipes,
+			'searchString' => $searchString,
+		));
+	}
+
+	/**
 	 * @Route("/recipes/add", name="addRecipe")
 	 */
 	public function addAction(Request $request) {
-		// creates a task and gives it some dummy data for this example
 		$recipe = new Recipe();
 		return $this->formAction($request, $recipe);
 	}
@@ -305,7 +320,7 @@ class RecipeController extends Controller {
 			'entry_type' => TextType::class,
 			'attr' => ['class' => 'ui three column grid'],
 			'entry_options' => array(
-			'label' => false,
+				'label' => false,
 				'required' => false,
 				'attr' => ['placeholder' => 'Lachs, Bacon, Käse, ...', 'class' => 'column']
 			),

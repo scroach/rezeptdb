@@ -9,6 +9,15 @@
 				<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
 				<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i> Zutatensuche</a>
 				<div class="right menu">
+					<form method="post" action="{{ path('searchRecipe') }}">
+						<div class="ui right aligned category search item">
+							<div class="ui transparent icon input">
+								<input class="prompt" placeholder="Suchen..." type="text" name="search">
+								<i class="search link icon"></i>
+							</div>
+						</div>
+					</form>
+
 					<a class="item" href="{{ path('logout') }}"><i class="times circle outline icon"></i> Logout</a>
 				</div>
 			</div>
