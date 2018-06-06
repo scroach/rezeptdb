@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use App\Entity\Image;
+use App\Entity\Ingredient;
 use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Form\Type\IngredientType;
@@ -43,7 +44,7 @@ class RecipeController extends Controller {
 	}
 
 	/**
-	 * @Route("/recipes", name="recipeIndex")
+	 * @Route("/", name="recipeIndex")
 	 */
 	public function indexAction() {
 		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->findAll();
@@ -74,6 +75,7 @@ class RecipeController extends Controller {
 	 */
 	public function addAction(Request $request) {
 		$recipe = new Recipe();
+		$recipe->addIngredient(new Ingredient());
 		return $this->formAction($request, $recipe);
 	}
 
@@ -226,6 +228,7 @@ class RecipeController extends Controller {
 
 		return $this->render('form.html.twig', array(
 			'form' => $form->createView(),
+			'recipe' => $recipe,
 			'existingTags' => $existingTags,
 		));
 	}
