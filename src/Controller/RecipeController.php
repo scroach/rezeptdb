@@ -116,6 +116,7 @@ class RecipeController extends Controller {
 		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
 		$this->getDoctrine()->getManager()->remove($recipe);
 		$this->getDoctrine()->getManager()->flush();
+		$this->addFlash('success','Rezept erfolgreich gelöscht!');
 		return $this->redirectToRoute('recipeIndex');
 	}
 
@@ -218,6 +219,7 @@ class RecipeController extends Controller {
 			$this->getDoctrine()->getManager()->persist($recipe);
 			$this->getDoctrine()->getManager()->flush();
 
+			$this->addFlash('success','Rezept erfolgreich gespeichert!');
 			return $this->redirectToRoute('showRecipe', ['id' => $recipe->getId()]);
 		}
 

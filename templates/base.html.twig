@@ -23,6 +23,16 @@
 			</form>
 		{% endif %}
 
+		{% for message in app.flashes('success') %}
+			<div class="ui positive message">{{ message }}</div>
+		{% endfor %}
+		{% for message in app.flashes('warning') %}
+			<div class="ui warning message">{{ message }}</div>
+		{% endfor %}
+		{% for message in app.flashes('error') %}
+			<div class="ui negative message">{{ message }}</div>
+		{% endfor %}
+
 		{% block content %}{% endblock %}
 	</div>
 
