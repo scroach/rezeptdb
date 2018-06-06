@@ -4,12 +4,14 @@
 
 {% block content %}
 
-    <div class="ui segment">
-        <div class="ui four doubling stackable cards">
-            {% for tag in tags %}
-                {{ include('tag.card.html.twig', { 'recipe': tag }) }}
-            {% endfor %}
-        </div>
-    </div>
+	<div class="ui segment">
+		<div class="ui four doubling stackable cards">
+			{% for tag in tags %}
+				{% if tag.recipes is not empty %}
+					{{ include('tag.card.html.twig', { 'recipe': tag }) }}
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
 
 {% endblock %}
