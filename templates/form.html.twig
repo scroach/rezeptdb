@@ -86,21 +86,37 @@
 						<div class="ui basic label"> Minuten</div>
 					</div>
 
+					{{ form_label(form.description) }}
+					{{ form_errors(form.description) }}
+					{{ form_widget(form.description) }}
+				</div>
+				<div class="six wide field rec-images-container">
+
 					{{ form_label(form.files) }}
 					{{ form_errors(form.files) }}
 					{{ form_widget(form.files) }}
 
 					<div class="field">
 						<div class="gallery ui three column grid">
+							<div class="column"><img src="" /></div>
 						</div>
 					</div>
 
-					{{ form_label(form.description) }}
-					{{ form_errors(form.description) }}
-					{{ form_widget(form.description) }}
-				</div>
-				<div class="six wide field rec-images-container">
+					<label>Remote Bilder</label>
+					<div class="ui three column grid rec-images"></div>
+
+					<label>Vorhandene Bilder</label>
 					<div class="ui three column grid rec-images">
+						{% for image in recipe.images %}
+							<div class="column">
+								{% if image.localFileName %}
+									<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+								{% else %}
+									<img src="{{ image.url }}"/>
+								{% endif %}
+							</div>
+						{% endfor %}
+
 					</div>
 				</div>
 			</div>
@@ -225,6 +241,11 @@
 	<style type="text/css">
 		.selectize-control {
 			width: 100%;
+		}
+
+		.gallery.ui.grid {
+			margin-top:auto;
+			margin-bottom:auto;
 		}
 
 		.gallery img {
