@@ -31,3 +31,12 @@ doctrine:
         dql:
             string_functions:
                 MATCH_AGAINST: App\Repository\MatchAgainstFunction
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
+stof_doctrine_extensions:
+    default_locale: es_ES
+    orm:
+        default:
+            softdeleteable: true    # needed: listeners are not enabled by default

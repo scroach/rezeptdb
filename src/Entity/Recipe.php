@@ -4,12 +4,14 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RecipeRepository")
  * @ORM\Table(name="recipes")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Recipe {
 	/**
@@ -69,6 +71,11 @@ class Recipe {
 	private $modified;
 
 	/**
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	private $deletedAt;
+
+	/**
 	 * Property for file uploads
 	 * @var null|UploadedFile[]
 	 */
@@ -79,8 +86,6 @@ class Recipe {
 
 	/**
 	 * Recipe constructor.
-	 * @param $tags
-	 * @param array $ingredients
 	 */
 	public function __construct() {
 		$this->tags = new ArrayCollection();
@@ -270,6 +275,20 @@ class Recipe {
 	 */
 	public function setSearchRating(float $searchRating): void {
 		$this->searchRating = $searchRating;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDeletedAt() {
+		return $this->deletedAt;
+	}
+
+	/**
+	 * @param mixed $deletedAt
+	 */
+	public function setDeletedAt($deletedAt): void {
+		$this->deletedAt = $deletedAt;
 	}
 
 }
