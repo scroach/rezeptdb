@@ -44,11 +44,16 @@ class RecipeRepository extends ServiceEntityRepository {
 			}
 		}
 
-		$additional = $this->createQueryBuilder('r')
-			->where('(r.description LIKE :search OR r.label LIKE :search) AND r.id NOT IN (:ids)')
-			->setParameter('search', "%$searchString%")
-			->setParameter('ids', $alreadyFoundIds)
-			->getQuery()->getResult();
+		$additionalQuery = $this->createQueryBuilder('r')
+			->where('(r.description LIKE :search OR r.label LIKE :search)')
+			->setParameter('search', "%$searchString%");
+		if (count($alreadyFoundIds)) {
+			$additionalQuery->andWhere('r.id NOT IN (:ids)')
+				->setParameter('ids', $alreadyFoundIds);
+		}
+
+		$additional = $additionalQuery->getQuery()->getResult();
+
 		/** @var Recipe $recipe */
 		foreach ($additional as $recipe) {
 			$recipe->setSearchRating(0.01);
