@@ -212,6 +212,12 @@
 				addIngredient();
 			});
 
+			$('body').on('keydown', '.ingredients input', function () {
+				if ($(this).is('.ingredients input:last')) {
+					addIngredient();
+				}
+			});
+
 			$('body').on('click', '.remove-row', function (e) {
 				e.preventDefault();
 				$(this).closest('div').remove();
@@ -250,6 +256,10 @@
 
 		.gallery img {
 			max-width: 100%;
+		}
+
+		.ingredients .button {
+			margin-top: 10px;
 		}
 	</style>
 

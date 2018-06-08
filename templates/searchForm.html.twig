@@ -58,8 +58,8 @@
 	<script type="text/javascript">
 		$(function () {
 
+			var $list = $('#form_ingredients');
 			var addIngredient = function () {
-				var $list = $(this).closest('form').find('[data-prototype]');
 				var counter = $list.data('widget-counter') | $list.children().length;
 				if (!counter) {
 					counter = $list.children().length;
@@ -75,7 +75,14 @@
 
 				newElem.find('input').val();
 				newElem.appendTo($list);
-			}
+			};
+
+			$('body').on('keydown', '#form_ingredients input', function () {
+				console.info($(this).is('#form_ingredients input:last'));
+				if ($(this).is('#form_ingredients input:last')) {
+					addIngredient();
+				}
+			});
 
 			$('.add-collection-item').on('click', addIngredient);
 			$('body').on('click', '.remove-row', function (e) {
@@ -87,6 +94,10 @@
 	<style type="text/css">
 		.selectize-control {
 			width: 100%;
+		}
+
+		form .ui.button {
+			margin-top: 10px;
 		}
 	</style>
 
