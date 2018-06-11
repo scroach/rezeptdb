@@ -9,9 +9,9 @@
 			{% set image = recipe.images | first %}
 			{% if (image) %}
 				{% if image.localFileName %}
-					<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(300,300) }}"/>
 				{% else %}
-					<img src="{{ image.url }}"/>
+					<img src="{{ image(image.url).cropResize(300,300) }}"/>
 				{% endif %}
 			{% else %}
 				<img src="https://foodtango.com.au/img/ui/noimage.png">

@@ -381,4 +381,21 @@ class RecipeController extends Controller {
 
 		return $matchedIngredients / count($wantedIngredients);
 	}
+
+	/**
+	 * @Route("/recipes/downloadMissingRemoteImages")
+	 */
+	public function downloadMissingRemoteImages() {
+		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->findAll();
+		foreach ($recipes as $recipe) {
+			foreach ($recipe->getImages() as $image) {
+				if (!$image->getLocalFileName()) {
+					$this->downloadRemoteImage($image);
+					$this->addFlash('success', sprintf('Downloaded image id %d from url: %s', $image->getId(), $image->getUrl()));
+					$this->getDoctrine()->getManager()->flush();
+				}
+			}
+		}
+		return $this->redirectToRoute('showRecipe', ['id' => $recipe->getId()]);
+	}
 }
