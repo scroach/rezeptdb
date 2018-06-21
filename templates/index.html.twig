@@ -13,13 +13,58 @@
 		</div>
 	</div>
 
-	<div class="ui segment">
+	<div class="ui segment all-recipes">
 		<h3 class="ui header">Alle Rezepte</h3>
 		<div class="ui four doubling stackable cards">
 			{% for recipe in recipes %}
 				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
 			{% endfor %}
 		</div>
+
+		<div class="ui large active centered inline text loader">
+			Weitere Rezepte werden geladen...
+		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(function () {
+			var allRecipesLoaded = false;
+			$('.all-recipes').visibility({
+				once: false,
+				// update size when new content loads
+				observeChanges: true,
+				// load content on bottom edge visible
+				onBottomVisible: function () {
+					if (!allRecipesLoaded) {
+						loadMoreRecipes();
+					}
+				}
+			});
+
+			function loadMoreRecipes() {
+				$('.all-recipes .loader').addClass('active');
+				var excludeIds = [];
+				$('.card').each(function (i, item) {
+					excludeIds.push($(item).data('recipe-id'));
+				});
+
+				$.get("http://localhost/rezeptdb/public/recipes/loadMoreRecipes", {excludeIds: excludeIds}, function (data) {
+					if (typeof  data === 'object') {
+						$('.all-recipes').append('<div class="ui info message">' + data.message + '</div>');
+						allRecipesLoaded = true;
+					} else {
+						$('.all-recipes .cards').append(data);
+					}
+					$('.all-recipes .loader').removeClass('active');
+				});
+			}
+		});
+	</script>
+
+	<style type="text/css">
+		.ui.large.text.loader {
+			margin-top: 2em;
+		}
+	</style>
 
 {% endblock %}

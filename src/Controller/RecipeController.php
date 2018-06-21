@@ -56,6 +56,25 @@ class RecipeController extends Controller {
 	}
 
 	/**
+	 * @Route("/recipes/loadMoreRecipes", name="loadMoreRecipes")
+	 */
+	public function loadMoreRecipesAction(Request $request) {
+		$excludeIds = $request->get('excludeIds');
+		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r')
+			->where('r.id NOT IN (:excludedIds)')->setParameter('excludedIds', $excludeIds)
+			->orderBy('r.modified', 'DESC')
+			->setMaxResults(20)->getQuery()->getResult();
+
+		if (empty($recipes)) {
+			return new JsonResponse(['message' => 'Keine Rezepte mehr :(']);
+		} else {
+			return $this->render('ajax/recipes.html.twig', array(
+				'recipes' => $recipes,
+			));
+		}
+	}
+
+	/**
 	 * @Route("/recipes/search/{searchString}", name="searchRecipe")
 	 */
 	public function searchAction(Request $request, $searchString = null) {
