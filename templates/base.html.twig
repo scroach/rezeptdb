@@ -10,6 +10,7 @@
 					<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
 					<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i>
 						Zutatensuche</a>
+
 					<div class="right menu">
 						<div class="ui right aligned category search item">
 							<div class="ui transparent icon input">
@@ -17,6 +18,9 @@
 								<i class="search link icon"></i>
 							</div>
 						</div>
+						<a href="#" class="item">
+							<img class="avatar" src="https://www.gravatar.com/avatar/{{ app.user.email | md5 }}?s=100">
+						</a>
 						<a class="item" href="{{ path('logout') }}"><i class="times circle outline icon"></i> Logout</a>
 					</div>
 				</div>
@@ -90,7 +94,13 @@
 			width: 100%;
 			height: 200px;
 		}
+
+		.avatar {
+			width: 30px;
+			border-radius: 50px;
+		}
 	</style>
+
 
 {% endblock %}
 
