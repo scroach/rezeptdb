@@ -48,7 +48,7 @@
 					excludeIds.push($(item).data('recipe-id'));
 				});
 
-				$.get("http://localhost/rezeptdb/public/recipes/loadMoreRecipes", {excludeIds: excludeIds}, function (data) {
+				$.get("{{ path('loadMoreRecipes') }}", {excludeIds: excludeIds}, function (data) {
 					if (typeof  data === 'object') {
 						$('.all-recipes').append('<div class="ui info message">' + data.message + '</div>');
 						allRecipesLoaded = true;
