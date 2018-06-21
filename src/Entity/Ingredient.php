@@ -17,7 +17,7 @@ class Ingredient {
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Recipe")
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Recipe", inversedBy="ingredients")
 	 */
 	private $recipe;
 

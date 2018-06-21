@@ -17,7 +17,7 @@ class Image {
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Recipe")
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Recipe", inversedBy="images")
 	 */
 	private $recipe;
 
