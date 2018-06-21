@@ -31,6 +31,7 @@ doctrine:
         dql:
             string_functions:
                 MATCH_AGAINST: App\Repository\MatchAgainstFunction
+                RAND: App\Repository\RandFunction
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter

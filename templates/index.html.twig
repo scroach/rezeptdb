@@ -4,12 +4,22 @@
 
 {% block content %}
 
-    <div class="ui segment">
-        <div class="ui four doubling stackable cards">
-            {% for recipe in recipes %}
-                {{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
-            {% endfor %}
-        </div>
-    </div>
+	<div class="ui piled segment">
+		<h3 class="ui header">Zufallsrezepte</h3>
+		<div class="ui four doubling stackable cards">
+			{% for recipe in randomRecipes %}
+				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="ui segment">
+		<h3 class="ui header">Alle Rezepte</h3>
+		<div class="ui four doubling stackable cards">
+			{% for recipe in recipes %}
+				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
+			{% endfor %}
+		</div>
+	</div>
 
 {% endblock %}
