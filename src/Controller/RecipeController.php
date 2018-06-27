@@ -394,7 +394,7 @@ class RecipeController extends Controller {
 
 		foreach ($wantedIngredients as $wantedIngredient) {
 			foreach ($recipe->getIngredients() as $ingredient) {
-				if (strpos($ingredient->getLabel(), $wantedIngredient) !== false) {
+				if (strpos(strtolower($ingredient->getLabel()), strtolower($wantedIngredient)) !== false) {
 					$matchedIngredients++;
 					break;
 				}
