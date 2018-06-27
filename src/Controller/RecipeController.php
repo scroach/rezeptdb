@@ -329,6 +329,9 @@ class RecipeController extends Controller {
 
 	public function downloadRemoteImage(Image $image) {
 		$uploadDirectory = $this->getParameter('upload_directory');
+        if (!file_exists($uploadDirectory)) {
+            mkdir($uploadDirectory, 0777, true);
+        }
 		$localPath = $uploadDirectory.'/'.$this->generateUniqueFileName();
 		copy($image->getUrl(), $localPath);
 
