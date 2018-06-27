@@ -6,7 +6,7 @@ namespace App\Service;
 class ChefkochDOMParser extends AbstractDOMParser {
 
 	public function isApplicableForUrl(string $url): bool {
-		return preg_match('/^(https?\:)?(\/\/)?(www\.)?chefkoch\.de/', $url);
+		return preg_match('/^(https?\:)?(\/\/)?(www\.)?chefkoch\.de\/rezepte/', $url);
 	}
 
 	protected function fetchImages(\DOMDocument $doc): array {
