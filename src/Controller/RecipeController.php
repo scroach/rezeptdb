@@ -85,6 +85,11 @@ class RecipeController extends Controller {
 
 		$searchString = urldecode($searchString);
 		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->search($searchString);
+
+		if (empty($recipes)) {
+			$this->addFlash('warning', sprintf('Ich konnte leider keine Rezepte mit "%s" finden :\'(', $searchString));
+		}
+
 		return $this->render('searchResults.html.twig', array(
 			'recipes' => $recipes,
 			'searchString' => $searchString,
@@ -371,6 +376,10 @@ class RecipeController extends Controller {
 				}
 			}
 			usort($recipes, [$this, 'sortRecipesByRating']);
+		}
+
+		if ($form->isSubmitted() && empty($recipes)) {
+			$this->addFlash('warning', 'Ich konnte leider keine Rezepte mit diesen Zutaten finden :\'(');
 		}
 
 		return $this->render('searchForm.html.twig', array(

@@ -4,13 +4,15 @@
 
 {% block content %}
 
-	<h1>Suchergebnisse für: {{ searchString }}</h1>
-	<div class="ui segment">
-		<div class="ui four doubling stackable cards">
-			{% for recipe in recipes %}
-				{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
-			{% endfor %}
+	{% if recipes is not empty %}
+		<h1>Suchergebnisse für: {{ searchString }}</h1>
+		<div class="ui segment">
+			<div class="ui four doubling stackable cards">
+				{% for recipe in recipes %}
+					{{ include('recipe.card.html.twig', { 'recipe': recipe }) }}
+				{% endfor %}
+			</div>
 		</div>
-	</div>
+	{% endif %}
 
 {% endblock %}
