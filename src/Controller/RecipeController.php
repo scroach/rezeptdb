@@ -158,8 +158,9 @@ class RecipeController extends Controller {
 		$tag = $this->getDoctrine()->getRepository(Tag::class)->findOneBy(['label' => $tagLabel]);
 		$builder = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r');
 		$recipes = $builder->join('r.tags', 't')->where('t = :tag')->setParameter('tag', $tag)->getQuery()->getResult();
-		return $this->render('index.html.twig', array(
+		return $this->render('recipesByTags.html.twig', array(
 			'recipes' => $recipes,
+			'tag' => $tag,
 		));
 	}
 
