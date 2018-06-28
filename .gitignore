@@ -25,3 +25,21 @@ yarn-error.log
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+###> .idea files ###
+.idea/misc.xml
+.idea/modules.xml
+.idea/php.xml
+.idea/rezeptdb.iml
+.idea/vcs.xml
+.idea/workspace.xml
+###< .idea files ###
+
+###> lock files
+package-lock.json
+###< lock files
+
+###> some public folders
+public/cache/*
+public/uploads/*
+###< public folder
