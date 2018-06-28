@@ -109,11 +109,15 @@
 					<label>Vorhandene Bilder</label>
 					<div class="ui three column grid rec-images">
 						{% for image in recipe.images %}
-							<div class="column">
+							<div class="column active">
 								{% if image.localFileName %}
 									<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+									<input type="hidden" name="images[]" value="{{ asset(upload_directory~'/'~image.localFileName) }}" />
+									<i class="white check circle icon"></i>
 								{% else %}
 									<img src="{{ image.url }}"/>
+									<input type="hidden" name="images[]" value="{{ image.url }}" />
+									<i class="white check circle icon"></i>
 								{% endif %}
 							</div>
 						{% endfor %}

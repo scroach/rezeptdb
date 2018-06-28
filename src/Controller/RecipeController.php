@@ -199,68 +199,82 @@ class RecipeController extends Controller {
 	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
 	 */
 	private function formAction(Request $request, Recipe $recipe) {
-		$formBuilder = $this->createFormBuilder($recipe)
-			->add('label', TextType::class, ['label' => 'Titel', 'attr' => ['placeholder' => 'Supersaftige Rippchen']])
-			->add('description', TextareaType::class)
-			->add('originUrl', UrlType::class)
-			->add('tagsString', TextType::class)
-			->add('effort', TextType::class, ['label' => 'Aufwand', 'attr' => ['placeholder' => '20 Minuten']])
-			->add('files', FileType::class, [
-				'label' => 'Fotos',
-				'multiple' => true,
-				'required' => false,
-				'attr' => [
-					'multiple' => 'multiple',
-					'accept' => 'image/*',
-				]
-			])
-			->add('submit', SubmitType::class, ['label' => 'Rezept speichern']);
+        $formBuilder = $this->createFormBuilder($recipe)
+            ->add('label', TextType::class, ['label' => 'Titel', 'attr' => ['placeholder' => 'Supersaftige Rippchen']])
+            ->add('description', TextareaType::class)
+            ->add('originUrl', UrlType::class)
+            ->add('tagsString', TextType::class)
+            ->add('effort', TextType::class, ['label' => 'Aufwand', 'attr' => ['placeholder' => '20 Minuten']])
+            ->add('files', FileType::class, [
+                'label' => 'Fotos',
+                'multiple' => true,
+                'required' => false,
+                'attr' => [
+                    'multiple' => 'multiple',
+                    'accept' => 'image/*',
+                ]
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Rezept speichern']);
 
-		$formBuilder->add('ingredients', CollectionType::class, array(
-			'label' => 'Zutaten',
-			'allow_add' => true,
-			'allow_delete' => true,
-			'entry_type' => IngredientType::class,
-			'entry_options' => array(
-				'label' => false,
-				'required' => false,
-				'attr' => ['placeholder' => '100 g Mehl, 2 EL Zucker, ...']
-			),
-		));
+        $formBuilder->add('ingredients', CollectionType::class, array(
+            'label' => 'Zutaten',
+            'allow_add' => true,
+            'allow_delete' => true,
+            'entry_type' => IngredientType::class,
+            'entry_options' => array(
+                'label' => false,
+                'required' => false,
+                'attr' => ['placeholder' => '100 g Mehl, 2 EL Zucker, ...']
+            ),
+        ));
 
-		$form = $formBuilder->getForm();
+        $form = $formBuilder->getForm();
 
-		$form->handleRequest($request);
+        $form->handleRequest($request);
 
-		if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
-			$this->processSubmittedTags($recipe);
-			$this->processFileUploads($recipe);
-			$this->processRemoteImages($recipe);
+            $this->processSubmittedTags($recipe);
+            $this->processFileUploads($recipe);
+            $this->processRemoteImages($recipe);
+            $this->removeNoLongerUsedImages($recipe);
 
-			//TODO replace this hack?
-			foreach ($recipe->getIngredients() as $ingredient) {
-				$ingredient->setRecipe($recipe);
-			}
+            //TODO replace this hack?
+            foreach ($recipe->getIngredients() as $ingredient) {
+                $ingredient->setRecipe($recipe);
+            }
 
-			$this->getDoctrine()->getManager()->persist($recipe);
-			$this->getDoctrine()->getManager()->flush();
+            $this->getDoctrine()->getManager()->persist($recipe);
+            $this->getDoctrine()->getManager()->flush();
 
-			$this->addFlash('success', 'Rezept erfolgreich gespeichert!');
-			return $this->redirectToRoute('showRecipe', ['id' => $recipe->getId()]);
-		}
+            $this->addFlash('success', 'Rezept erfolgreich gespeichert!');
+            return $this->redirectToRoute('showRecipe', ['id' => $recipe->getId()]);
+        }
 
-		$existingTags = array_map(function (Tag $tag) {
-			return ['value' => $tag->getLabel(), 'text' => $tag->getLabel()];
-		}, $this->getDoctrine()->getManager()->getRepository(Tag::class)->findAll());
+        $existingTags = array_map(function (Tag $tag) {
+            return ['value' => $tag->getLabel(), 'text' => $tag->getLabel()];
+        }, $this->getDoctrine()->getManager()->getRepository(Tag::class)->findAll());
 
 
-		return $this->render('form.html.twig', array(
-			'form' => $form->createView(),
-			'recipe' => $recipe,
-			'existingTags' => $existingTags,
-		));
-	}
+        return $this->render('form.html.twig', array(
+            'form' => $form->createView(),
+            'recipe' => $recipe,
+            'existingTags' => $existingTags,
+        ));
+    }
+
+    /**
+     * @param Recipe $recipe
+     */
+	private function removeNoLongerUsedImages(Recipe $recipe): void {
+        $imagesInDB = $this->getDoctrine()->getRepository(Image::class)->findBy(['recipe' => $recipe]);
+        /** @var Image $image */
+        foreach ($imagesInDB as $image) {
+            if(!isset($_POST['images']) || !in_array("/rezeptdb/uploads/recipe-images/".$image->getLocalFileName(), $_POST['images'])) {
+                $this->getDoctrine()->getManager()->remove($image);
+            }
+        }
+    }
 
 	/**
 	 * @param Recipe $recipe
@@ -318,6 +332,9 @@ class RecipeController extends Controller {
 	private function processRemoteImages(Recipe $recipe): void {
 		$images = [];
 		foreach ($_POST['images'] ?? [] as $imageUrl) {
+		    if($this->imageIsAlreadyInSystem($imageUrl)) {
+		        continue;
+            }
 			$image = new Image();
 			$image->setRecipe($recipe);
 			$image->setUrl($imageUrl);
@@ -328,6 +345,9 @@ class RecipeController extends Controller {
 	}
 
 	public function downloadRemoteImage(Image $image) {
+	    if($this->imageIsAlreadyInSystem($image->getUrl())) {
+	        return;
+	    }
 		$uploadDirectory = $this->getParameter('upload_directory');
         if (!file_exists($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
@@ -342,6 +362,14 @@ class RecipeController extends Controller {
 		$image->setLocalFileName(basename($localPath.'.'.$ext));
 	}
 
+    /**
+     * @param String $url
+     * @return bool
+     */
+	private function imageIsAlreadyInSystem(String $url): bool {
+	    $query = "http";
+        return substr($url, 0, strlen($query)) !== $query;
+    }
 
 	/**
 	 * @Route("/recipes/searchByIngredients", name="searchByIngredients")
