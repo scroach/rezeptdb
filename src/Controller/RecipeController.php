@@ -270,7 +270,9 @@ class RecipeController extends Controller {
         $imagesInDB = $this->getDoctrine()->getRepository(Image::class)->findBy(['recipe' => $recipe]);
         /** @var Image $image */
         foreach ($imagesInDB as $image) {
-            if(!isset($_POST['images']) || !in_array("/rezeptdb/uploads/recipe-images/".$image->getLocalFileName(), $_POST['images'])) {
+            $filename = "uploads/recipe-images/".$image->getLocalFileName();
+            if(!isset($_POST['images']) || !in_array("/rezeptdb/".$filename, $_POST['images'])) {
+                unlink($filename);
                 $this->getDoctrine()->getManager()->remove($image);
             }
         }
