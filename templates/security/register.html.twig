@@ -5,42 +5,48 @@
 		<div class="column">
 			<h2 class="ui teal image header">
 				<div class="content">
-					Login
+					Registrieren
 				</div>
 			</h2>
-			<form action="{{ path('login') }}" method="post" class="ui large form">
+			<form action="{{ path('addUser') }}" method="post" class="ui large form">
 				<div class="ui stacked segment">
 					{% if error %}
 						<div class="ui negative message">
 							<i class="close icon"></i>
-							<div class="header">Login fehlgeschlagen!</div>
-							<p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+							<div class="header">Anmeldung fehlgeschlagen!</div>
+							<p>{{ error }}</p>
 						</div>
 					{% endif %}
 					<div class="field">
 						<div class="ui left icon input">
+							<i class="mail icon"></i>
+							<input type="text" name="_email" placeholder="E-Mail" />
+						</div>
+					</div>
+					<div class="field">
+						<div class="ui left icon input">
 							<i class="user icon"></i>
-							<input type="text" name="_username" placeholder="Username" value="{{ last_username }}"/>
+							<input type="text" name="_username" placeholder="Username" />
 						</div>
 					</div>
 					<div class="field">
 						<div class="ui left icon input">
 							<i class="lock icon"></i>
-							<input type="password" name="_password" placeholder="Passwort">
+							<input type="password" name="_password1" placeholder="Passwort">
 						</div>
 					</div>
-					<button type="submit" class="ui fluid large teal submit button">Login</button>
+					<div class="field">
+						<div class="ui left icon input">
+							<i class="lock icon"></i>
+							<input type="password" name="_password2" placeholder="Passwort wiederholen">
+						</div>
+					</div>
+					<button type="submit" class="ui fluid large teal submit button">Registrieren</button>
 				</div>
 
 				<div class="ui error message"></div>
 
 			</form>
-
-			<div class="ui message">
-				<a href="{{ path('register') }}">Registrieren</a>
-				<br/>
-				Passwort vergessen? Schade!
-			</div>
 		</div>
 	</div>
 
