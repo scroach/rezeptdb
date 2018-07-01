@@ -69,6 +69,8 @@
 									class="external alternate icon"></i> {{ recipe.originUrl }}</a>
 						<a href="{{ path('editRecipe', {'id': recipe.id}) }}" class="ui mini button right"><i
 									class="edit icon"></i> Bearbeiten</a>
+						<a href="{{ path('deleteRecipe', {'id': recipe.id}) }}" class="ui mini button right"><i
+									class="delete icon"></i>Löschen</a>
 					</p>
 				</div>
 			</div>

@@ -16,6 +16,7 @@
 			{% else %}
 				<img src="https://foodtango.com.au/img/ui/noimage.png">
 			{% endif %}
+			<a href="{{ path('deleteRecipe', {'id': recipe.id}) }}"><i class="link times red icon"></i></a>
 		</a>
 	</div>
 	<div class="content">
