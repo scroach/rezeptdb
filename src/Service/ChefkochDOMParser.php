@@ -58,4 +58,28 @@ class ChefkochDOMParser extends AbstractDOMParser {
 		}
 	}
 
+    protected function fetchEffort(\DOMDocument $doc): int {
+        $effort = 0;
+        $preparationInfo = $doc->getElementById('preparation-info');
+        if($preparationInfo) {
+            $preparationInfoValue = $preparationInfo->nodeValue;
+            preg_match_all('/(\d*) Min./', $preparationInfoValue, $minutes);
+            preg_match_all('/(\d*) Std./', $preparationInfoValue, $hours);
+            for($i = 1; $i < count($minutes); $i++) {
+                if(!empty($minutes[$i])) {
+                    $effort += $minutes[$i][0];
+                }
+            }
+            for($i = 1; $i < count($hours); $i++) {
+                if(!empty($hours[$i])) {
+                    $effort += $hours[$i][0] * 60;
+                }
+            }
+        }
+        if($effort == 0) {
+            $effort = 1;
+        }
+        return $effort;
+    }
+
 }

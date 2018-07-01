@@ -64,4 +64,8 @@ class GuteKuecheDOMParser extends AbstractDOMParser {
 		return '';
 	}
 
+    protected function fetchEffort(\DOMDocument $doc): int {
+        return 1;
+    }
+
 }
