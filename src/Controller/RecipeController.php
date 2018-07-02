@@ -109,38 +109,21 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/edit/{id}", name="editRecipe")
 	 */
 	public function editAction(Request $request, int $id) {
-		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
-
-		if (!$recipe) {
-			throw $this->createNotFoundException('No product found for id '.$id);
-		}
-
-		return $this->formAction($request, $recipe);
+		return $this->formAction($request, $this->getRecipeById($id));
 	}
 
 	/**
 	 * @Route("/recipes/show/{id}", name="showRecipe")
 	 */
-	public function showAction($id) {
-		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
-
-		if (!$recipe) {
-			throw $this->createNotFoundException('No product found for id '.$id);
-		}
-
-		return $this->render('details.html.twig', ['recipe' => $recipe]);
+	public function showAction(int $id) {
+		return $this->render('details.html.twig', ['recipe' => $this->getRecipeById($id)]);
 	}
 
 	/**
 	 * @Route("/recipes/editImages/{id}", name="editRecipeImages")
 	 */
 	public function editImagesAction(Request $request, int $id) {
-		/** @var Recipe $recipe */
-		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
-		if (!$recipe) {
-			throw $this->createNotFoundException('No product found for id '.$id);
-		}
-
+		$recipe = $this->getRecipeById($id);
 		if ($request->isMethod('post')) {
 			$imageOrder = explode(',', $_POST['imageOrder']);
 			foreach ($recipe->getImages() as $image) {
@@ -459,5 +442,14 @@ class RecipeController extends Controller {
 			}
 		}
 		return $this->redirectToRoute('showRecipe', ['id' => $recipe->getId()]);
+	}
+
+	private function getRecipeById(int $id): Recipe {
+		/** @var Recipe|null $recipe */
+		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
+		if (!$recipe) {
+			throw $this->createNotFoundException(sprintf('Rezept mit ID %d existiert nicht ', $id));
+		}
+		return $recipe;
 	}
 }
