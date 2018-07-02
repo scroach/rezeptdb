@@ -57,6 +57,7 @@ class Recipe {
 
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="recipe")
+	 * @ORM\OrderBy({"sort" = "ASC"})
 	 */
 	private $images;
 

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+	<div class="ui segment">
+		<div class="row">
+			<div class="ui grid">
+				<div class="twelve wide column">
+					<h2 class="ui header">
+						Fotos bearbeiten
+						<div class="sub header">Drag&Drop um die Reihenfolge zu ändern</div>
+					</h2>
+				</div>
+
+				<div class="four wide column">
+					<form method="post" style="float: right;">
+						<input type="hidden" name="imageOrder"/>
+						<button type="submit" class="ui positive basic button"><i class="save outline icon"></i>
+							Speichern
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui doubling stackable grid">
+			<div class="row" id="recipe-images">
+				{% for image in recipe.images %}
+					<div class="four wide column" data-id="{{ image.id }}">
+						{% if image.localFileName %}
+							<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"
+								 data-id="{{ image.id }}"/>
+						{% else %}
+							<img src="{{ image.url }}" data-id="{{ image.id }}"/>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
+	<script type="text/javascript">
+		// see https://github.com/RubaXa/Sortable for docs and configuration
+		var sortableImages = Sortable.create(document.getElementById("recipe-images"), {
+			animation: 150,
+			ghostClass: "sortable-ghost",
+			onSort: function (/**Event*/evt) {
+				$('input[name="imageOrder"]').val(sortableImages.toArray());
+			}
+		});
+	</script>
+
+	<style type="text/css">
+		#recipe-images img {
+			object-fit: cover;
+			width: 300px;
+			height: 200px;
+		}
+
+		.sortable-ghost {
+			opacity: 0.4;
+		}
+	</style>
+
+
+{% endblock %}

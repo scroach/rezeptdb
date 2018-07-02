@@ -31,6 +31,11 @@ class Image {
 	 */
 	private $localFileName;
 
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	private $sort = 0;
+
 
 	public function getId() {
 		return $this->id;
@@ -78,5 +83,18 @@ class Image {
 		$this->localFileName = $localFileName;
 	}
 
+	/**
+	 * @return integer
+	 */
+	public function getSort() {
+		return $this->sort;
+	}
+
+	/**
+	 * @param integer $sort
+	 */
+	public function setSort($sort): void {
+		$this->sort = $sort;
+	}
 
 }
