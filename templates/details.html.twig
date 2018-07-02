@@ -69,8 +69,10 @@
 					<p>
 						<a href="{{ recipe.originUrl }}" target="_blank"><i
 									class="external alternate icon"></i> {{ recipe.originUrl }}</a>
-						<a href="{{ path('editRecipe', {'id': recipe.id}) }}" class="ui mini button right"><i
-									class="edit icon"></i> Bearbeiten</a>
+                        {% if app.user.username == 'admin' %}
+							<a href="{{ path('editRecipe', {'id': recipe.id}) }}" class="ui mini button right"><i
+										class="edit icon"></i> Bearbeiten</a>
+						{% endif %}
 						<a href="{{ path('editRecipeImages', {'id': recipe.id}) }}" class="ui mini button right"><i
 									class="edit icon"></i> Fotos Bearbeiten</a>
 					</p>

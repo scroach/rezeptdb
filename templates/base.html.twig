@@ -6,7 +6,9 @@
 			<form method="post" action="{{ path('searchRecipe') }}">
 				<div class="ui computer menu">
 					<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
-					<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+					{% if app.user.username == 'admin' %}
+						<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+					{% endif %}
 					<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
 					<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i>
 						Zutatensuche</a>
