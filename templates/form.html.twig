@@ -112,13 +112,11 @@
 							<div class="column active">
 								{% if image.localFileName %}
 									<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
-									<input type="hidden" name="images[]" value="{{ asset(upload_directory~'/'~image.localFileName) }}" />
-									<i class="white check circle icon"></i>
 								{% else %}
 									<img src="{{ image.url }}"/>
-									<input type="hidden" name="images[]" value="{{ image.url }}" />
-									<i class="white check circle icon"></i>
 								{% endif %}
+								<i class="white check circle icon"></i>
+								<input type="hidden" name="existingImages[]" value="{{ image.id }}"/>
 							</div>
 						{% endfor %}
 

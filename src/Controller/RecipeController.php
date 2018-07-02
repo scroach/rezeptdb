@@ -263,18 +263,11 @@ class RecipeController extends Controller {
         ));
     }
 
-    /**
-     * @param Recipe $recipe
-     */
 	private function removeNoLongerUsedImages(Recipe $recipe): void {
-        $imagesInDB = $this->getDoctrine()->getRepository(Image::class)->findBy(['recipe' => $recipe]);
-        /** @var Image $image */
-        foreach ($imagesInDB as $image) {
-            $filename = "uploads/recipe-images/".$image->getLocalFileName();
-            if(!isset($_POST['images']) || !in_array("/rezeptdb/".$filename, $_POST['images'])) {
-                unlink($filename);
+        foreach ($recipe->getImages() as $image) {
+            if(!in_array($image->getId(), $_POST['existingImages'])) {
                 $this->getDoctrine()->getManager()->remove($image);
-            }
+			}
         }
     }
 
@@ -334,9 +327,6 @@ class RecipeController extends Controller {
 	private function processRemoteImages(Recipe $recipe): void {
 		$images = [];
 		foreach ($_POST['images'] ?? [] as $imageUrl) {
-		    if($this->imageIsAlreadyInSystem($imageUrl)) {
-		        continue;
-            }
 			$image = new Image();
 			$image->setRecipe($recipe);
 			$image->setUrl($imageUrl);
@@ -347,9 +337,6 @@ class RecipeController extends Controller {
 	}
 
 	public function downloadRemoteImage(Image $image) {
-	    if($this->imageIsAlreadyInSystem($image->getUrl())) {
-	        return;
-	    }
 		$uploadDirectory = $this->getParameter('upload_directory');
         if (!file_exists($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
@@ -363,15 +350,6 @@ class RecipeController extends Controller {
 		rename($localPath, $localPath.'.'.$ext);
 		$image->setLocalFileName(basename($localPath.'.'.$ext));
 	}
-
-    /**
-     * @param String $url
-     * @return bool
-     */
-	private function imageIsAlreadyInSystem(String $url): bool {
-	    $query = "http";
-        return substr($url, 0, strlen($query)) !== $query;
-    }
 
 	/**
 	 * @Route("/recipes/searchByIngredients", name="searchByIngredients")
