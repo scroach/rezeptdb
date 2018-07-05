@@ -25,7 +25,7 @@ class ChefkochDOMParser extends AbstractDOMParser {
 
 	protected function fetchDescription(\DOMDocument $doc): string {
 		try {
-			return trim($doc->getElementById('rezept-zubereitung')->nodeValue);
+			return self::convertWhitespaceTrim($doc->getElementById('rezept-zubereitung')->nodeValue);
 		} catch (\Throwable $e) {
 			return 'error trying to parse description';
 		}
@@ -40,8 +40,8 @@ class ChefkochDOMParser extends AbstractDOMParser {
 				/** @var $row \DOMElement */
 				foreach ($image->getElementsByTagName('tr') as $row) {
 					$ingredients[] = [
-						'amount' => trim($row->getElementsByTagName('td')->item(0)->nodeValue),
-						'label' => trim($row->getElementsByTagName('td')->item(1)->nodeValue)
+						'amount' => self::convertWhitespaceTrim($row->getElementsByTagName('td')->item(0)->nodeValue),
+						'label' => self::convertWhitespaceTrim($row->getElementsByTagName('td')->item(1)->nodeValue)
 					];
 				}
 			}

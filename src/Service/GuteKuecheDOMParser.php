@@ -41,11 +41,12 @@ class GuteKuecheDOMParser extends AbstractDOMParser {
 		$ingredients = [];
 
 		/** @var $ingredient \DOMElement */
-		foreach ($doc->getElementsByTagName('li') as $ingredient) {
-			if (strpos($ingredient->getAttribute('class'), 'ingredient') !== false) {
+		foreach ($doc->getElementsByTagName('tr') as $ingredient) {
+			if (strpos($ingredient->getAttribute('itemprop'), 'ingredients') !== false) {
 				$ingredients[] = [
-					'amount' => trim($ingredient->getElementsByTagName('span')->item(0)->nodeValue),
-					'label' => trim($ingredient->getElementsByTagName('span')->item(1)->nodeValue)
+					'amount' => trim($ingredient->getElementsByTagName('td')->item(0)->nodeValue).' '.
+						trim($ingredient->getElementsByTagName('th')->item(0)->nodeValue),
+					'label' => trim($ingredient->getElementsByTagName('th')->item(1)->nodeValue)
 				];
 			}
 		}
