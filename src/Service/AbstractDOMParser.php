@@ -9,7 +9,7 @@ abstract class AbstractDOMParser {
 	public function analyzeUrl($url) {
 		$doc = $this->fetchDOM($url);
 
-		$images = $this->fetchImages($doc);
+		$images = $this->fixImageUrls($this->fetchImages($doc));
 		$ingredients = $this->fetchIngredients($doc);
 		$description = $this->fetchDescription($doc);
 		$title = $this->fetchTitle($doc);
@@ -37,6 +37,20 @@ abstract class AbstractDOMParser {
 	protected abstract function fetchDescription(\DOMDocument $doc): string;
 
 	public abstract function isApplicableForUrl(string $url): bool;
+
+	/**
+	 * Prepend https: if URL starts with // which causes errors when trying to fetch remote image
+	 * @param String[] $imageUrls
+	 * @return array
+	 */
+	private function fixImageUrls($imageUrls) {
+		foreach ($imageUrls as &$imageUrl) {
+			if (strpos($imageUrl, '//') === 0) {
+				$imageUrl = 'https:'.$imageUrl;
+			}
+		}
+		return $imageUrls;
+	}
 
 
 }
