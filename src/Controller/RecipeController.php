@@ -268,7 +268,7 @@ class RecipeController extends Controller {
 
 	private function removeNoLongerUsedImages(Recipe $recipe): void {
 		foreach ($recipe->getImages() as $image) {
-			if (!in_array($image->getId(), $_POST['existingImages'])) {
+			if (!isset($_POST['existingImages']) || !in_array($image->getId(), $_POST['existingImages'])) {
 				$this->getDoctrine()->getManager()->remove($image);
 			}
 		}
