@@ -49,4 +49,8 @@ class GenericWordpressDOMParser extends AbstractDOMParser {
 		}
 		return $result;
 	}
+
+    protected function fetchEffort(\DOMDocument $doc): int {
+        return 1;
+    }
 }

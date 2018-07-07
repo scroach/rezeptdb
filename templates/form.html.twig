@@ -83,6 +83,7 @@
 							   name="{{ form.effort.vars.full_name }}"
 							   value="{{ form.effort.vars.value }}"
 							   min="0"
+							   id="form_effort"
 							   required>
 						<div class="ui basic label"> Minuten</div>
 					</div>
@@ -143,6 +144,7 @@
 						console.info(response);
 						$('#form_label').val(response.title);
 						$('#form_description').val(response.description);
+                        $('#form_effort').val(response.effort);
 
 						clearIngredients();
 						response.ingredients.forEach(function (ingredient) {
