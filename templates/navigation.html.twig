@@ -1,0 +1,29 @@
+<form method="post" action="{{ path('searchRecipe') }}">
+	<div class="ui computer menu">
+		<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
+		<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+		<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+		<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i>
+			Zutatensuche</a>
+
+		<div class="right menu">
+			<div class="ui right aligned category search item">
+				<div class="ui transparent icon input">
+					<input class="prompt" placeholder="Suchen..." type="text" name="search">
+					<i class="search link icon"></i>
+				</div>
+			</div>
+
+			<div class="ui dropdown icon item">
+				<img class="avatar" src="https://www.gravatar.com/avatar/{{ app.user.email | md5 }}?s=100">
+				<div class="menu">
+					<a class="item" href="{{ path('editProfile') }}"><i class="user circle icon"></i> Profil bearbeiten</a>
+					<a class="item" href="{{ path('changePassword') }}"><i class="key icon"></i> Passwort ändern</a>
+				</div>
+			</div>
+
+			<a class="item" href="{{ path('logout') }}"><i class="times circle outline icon"></i> Logout</a>
+		</div>
+
+	</div>
+</form>
