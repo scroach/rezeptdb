@@ -37,27 +37,27 @@
 
 {% block content %}
 
-	<h1 class="ui center aligned header">Profil bearbeiten</h1>
+	<h1 class="ui center aligned header">{{ title }}</h1>
 
 	<div class="ui segment">
 
 		{{ form_start(form) }}
 		{{ form_errors(form) }}
+
 		<div class="ui form error">
-			<div class="field">
-				{{ form_label(form.username) }}
-				{{ form_errors(form.username) }}
-				{{ form_widget(form.username) }}
-			</div>
-			<div class="field">
-				{{ form_label(form.email) }}
-				{{ form_errors(form.email) }}
-				{{ form_widget(form.email) }}
-			</div>
+			{% for child in form.children %}
+				<div class="field">
+					{{ form_label(child) }}
+					{{ form_errors(child) }}
+					{{ form_widget(child) }}
+				</div>
+			{% endfor %}
+
 			<button class="ui button" type="submit">Speichern</button>
 		</div>
 
 		{{ form_end(form, {'render_rest': false}) }}
 	</div>
+
 
 {% endblock %}
