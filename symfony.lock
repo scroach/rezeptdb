@@ -80,6 +80,9 @@
     "gedmo/doctrine-extensions": {
         "version": "v2.4.34"
     },
+    "gregwar/image-bundle": {
+        "version": "v2.2.2"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },

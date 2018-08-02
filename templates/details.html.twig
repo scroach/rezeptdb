@@ -19,13 +19,16 @@
 				<div class="ui segment">
 					<h2>Zutaten</h2>
 					<div class="ui list">
-						{% for ingredient in recipe.ingredients %}
-							<div class="item">
-								<i class="right triangle icon"></i>
-								<div class="content">
-									<div class="header">{{ ingredient.amount }} {{ ingredient.label }}</div>
+						{% for ingredientGroup in recipe.ingredientGroups %}
+							{{ ingredientGroup.label }}
+							{% for ingredient in ingredientGroup.ingredients %}
+								<div class="item">
+									<i class="right triangle icon"></i>
+									<div class="content">
+										<div class="header">{{ ingredient.amount }} {{ ingredient.label }}</div>
+									</div>
 								</div>
-							</div>
+							{% endfor %}
 						{% endfor %}
 					</div>
 				</div>
@@ -73,8 +76,8 @@
 									class="edit icon"></i> Bearbeiten</a>
 						<a href="{{ path('editRecipeImages', {'id': recipe.id}) }}" class="ui mini button right"><i
 									class="edit icon"></i> Fotos Bearbeiten</a>
-						<a href="{{ path('deleteRecipe', {'id': recipe.id}) }}" 
-									onclick="return confirm('Willst du das Rezept wirklich löschen?')" 
+						<a href="{{ path('deleteRecipe', {'id': recipe.id}) }}"
+									onclick="return confirm('Willst du das Rezept wirklich löschen?')"
 									class="ui mini button right">
 									<i class="delete icon"></i>Löschen</a>
 					</p>

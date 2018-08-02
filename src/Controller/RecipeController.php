@@ -5,8 +5,10 @@ namespace App\Controller;
 
 use App\Entity\Image;
 use App\Entity\Ingredient;
+use App\Entity\IngredientGroup;
 use App\Entity\Recipe;
 use App\Entity\Tag;
+use App\Form\Type\IngredientGroupType;
 use App\Form\Type\IngredientType;
 use App\Service\AbstractDOMParser;
 use App\Service\ChefkochDOMParser;
@@ -101,7 +103,9 @@ class RecipeController extends Controller {
 	 */
 	public function addAction(Request $request) {
 		$recipe = new Recipe();
-		$recipe->addIngredient(new Ingredient());
+		$group = new IngredientGroup();
+		$group->addIngredient(new Ingredient());
+		$recipe->addIngredientGroup($group);
 		return $this->formAction($request, $recipe);
 	}
 
@@ -219,11 +223,15 @@ class RecipeController extends Controller {
 			])
 			->add('submit', SubmitType::class, ['label' => 'Rezept speichern']);
 
-		$formBuilder->add('ingredients', CollectionType::class, array(
+		$formBuilder->add('ingredientGroups', CollectionType::class, array(
 			'label' => 'Zutaten',
 			'allow_add' => true,
 			'allow_delete' => true,
-			'entry_type' => IngredientType::class,
+			'delete_empty' => true,
+			'attr' => ['class' => 'ingredientGroupList'],
+			'by_reference' => false,
+			'prototype_name' => '__groupcounter__',
+			'entry_type' => IngredientGroupType::class,
 			'entry_options' => array(
 				'label' => false,
 				'required' => false,
@@ -237,15 +245,23 @@ class RecipeController extends Controller {
 
 		if ($form->isSubmitted() && $form->isValid()) {
 
+            \ref::config('showMethods', false);
+            \ref::config('showPrivateMembers', true);
+
+            r($_POST);
+            r($recipe->getIngredientGroups()->get(0)->getIngredients()->toArray());
+            ~r($recipe->getIngredientGroups()->toArray());
+
 			$this->processSubmittedTags($recipe);
 			$this->processFileUploads($recipe);
 			$this->processRemoteImages($recipe);
 			$this->removeNoLongerUsedImages($recipe);
 
 			//TODO replace this hack?
-			foreach ($recipe->getIngredients() as $ingredient) {
-				$ingredient->setRecipe($recipe);
-			}
+//			foreach ($recipe->getIngredients() as $ingredient) {
+//				$ingredient->setRecipe($recipe);
+//			}
+
 
 			$this->getDoctrine()->getManager()->persist($recipe);
 			$this->getDoctrine()->getManager()->flush();

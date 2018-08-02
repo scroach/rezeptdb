@@ -28,9 +28,30 @@
 {% endblock %}
 
 
-{% block _form_ingredients_entry_widget %}
-	<div class="ui icon input">
+{% block ingredient_row %}
+	<div class="ui left labeled icon input ingredient">
+		<div class="ui basic label">
+			<i class="ui bars icon"></i>
+		</div>
 		{{ form_widget(form.label) }}
+		<i class="link times red icon remove-row"></i>
+	</div>
+{% endblock %}
+
+{% block ingredient_group_row %}
+	<div class="ingredientgroup">
+		{{ form_label(form) }}
+		{{ form_errors(form) }}
+		{{ form_widget(form) }}
+	</div>
+{% endblock %}
+
+{% block _form_ingredientGroups_entry_label_widget %}
+	<div class="ui left labeled icon input">
+		<div class="ui basic label">
+		<i class="ui bars icon"></i>
+		</div>
+		{{ form_widget(form) }}
 		<i class="link times red icon remove-row"></i>
 	</div>
 {% endblock %}
@@ -63,12 +84,15 @@
 			</div>
 			<div class="fields">
 				<div class="four wide field ingredients">
-					{{ form_label(form.ingredients) }}
-					{{ form_errors(form.ingredients) }}
-					{{ form_widget(form.ingredients) }}
+					{{ form_label(form.ingredientGroups) }}
+					{{ form_errors(form.ingredientGroups) }}
+					{{ form_widget(form.ingredientGroups) }}
 
-					<a class="add-collection-item small ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
+					<a class="add-collection-item small ui button" data-list="#{{ form.ingredientGroups.vars.id }}" href="#">
 						<i class="plus icon"></i> Weitere Zutat
+					</a>
+					<a class="add-ingredient-group small ui button" data-list="#{{ form.ingredientGroups.vars.id }}" href="#">
+						<i class="plus icon"></i> Weitere Gruppe
 					</a>
 				</div>
 				<div class="eight wide field">
@@ -130,6 +154,8 @@
 
 		{{ form_end(form, {'render_rest': false}) }}
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
 
 	<script type="text/javascript">
 		$(function () {
@@ -193,15 +219,14 @@
 				$('.ingredients [data-prototype]').empty();
 			}
 
-			function addIngredient(value) {
-				var $list = $('.ingredients [data-prototype]');
+			function addIngredient($list, value) {
 				var counter = $list.data('widget-counter') | $list.children().length;
 				if (!counter) {
 					counter = $list.children().length;
 				}
 
 				var newWidget = $list.attr('data-prototype');
-				newWidget = newWidget.replace(/__name__/g, counter);
+				newWidget = newWidget.replace(/__ingredientcounter__/g, counter);
 				counter++;
 				$list.data(' widget-counter', counter);
 
@@ -212,14 +237,38 @@
 				newElem.appendTo($list);
 			}
 
+			function addIngredientGroup(value) {
+				var $list = $('#form_ingredientGroups');
+				var counter = $list.data('widget-counter') | $list.children().length;
+				if (!counter) {
+					counter = $list.children().length;
+				}
+
+				var newWidget = $list.attr('data-prototype');
+				newWidget = newWidget.replace(/__groupcounter__/g, counter);
+				counter++;
+				$list.data('widget-counter', counter);
+
+				var tags = $list.attr('data-widget-tags') || '<div></div>';
+				var $newIngredientGroup = $(tags).html(newWidget);
+				$newIngredientGroup.find('input').val(value);
+				$newIngredientGroup.appendTo($list);
+				addIngredient($newIngredientGroup.find('.ingredientList'));
+			}
+
 			$('.add-collection-item').click(function (e) {
 				e.preventDefault();
-				addIngredient();
+				addIngredient($('.ingredientList').first());
+			});
+
+			$('.add-ingredient-group').click(function (e) {
+				e.preventDefault();
+				addIngredientGroup();
 			});
 
 			$('body').on('keydown', '.ingredients input', function () {
 				if ($(this).is('.ingredients input:last')) {
-					addIngredient();
+					addIngredient($(this).closest('.ingredientList'));
 				}
 			});
 
@@ -247,6 +296,36 @@
 			$('#form_files').on('change', function () {
 				imagesPreview(this, 'div.gallery');
 			});
+
+
+
+
+
+
+
+
+
+            var sortable = new Sortable(document.getElementsByClassName('ingredientList')[0], {
+                group: "name",  // or { name: "...", pull: [true, false, clone], put: [true, false, array] }
+                sort: true,  // sorting inside list
+                animation: 150,  // ms, animation speed moving items when sorting, `0` — without animation
+                handle: ".bars",  // Drag handle selector within list items
+                draggable: ".ingredient",  // Specifies which items inside the element should be draggable
+                ghostClass: "sortable-ghost",  // Class name for the drop placeholder
+                chosenClass: "sortable-chosen",  // Class name for the chosen item
+                dragClass: "sortable-drag",  // Class name for the dragging item
+                dataIdAttr: 'data-id',
+
+                setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
+                    dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
+                },
+
+                // Called by any change to the list (add / update / remove)
+                onSort: function (/**Event*/evt) {
+                    // same properties as onEnd
+                },
+
+            });
 		});
 	</script>
 	<style type="text/css">
@@ -265,6 +344,18 @@
 
 		.ingredients .button {
 			margin-top: 10px;
+		}
+
+		.ingredientList {
+			padding-left: 1em;
+		}
+
+		.ingredients .input.ingredient {
+			margin-top: 0.5em;
+		}
+
+		.sortable-ghost {
+			opacity: 0.2;
 		}
 	</style>
 
