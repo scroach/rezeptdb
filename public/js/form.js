@@ -4,9 +4,11 @@ $(function () {
 	 * Basic form init
 	 */
 
-	var $urlInput = $('input[name*="Url"]');
-	var fetchUrl = $urlInput.closest('form').data('fetch-url');
-	console.info(fetchUrl);
+	let $urlInput = $('input[name*="Url"]');
+	let fetchUrl = $urlInput.closest('form').data('fetch-url');
+	let $body = $('body');
+	let $formTagsString = $('#form_tagsString');
+	let $ingredientList = $('.ingredientList');
 
 	$urlInput.on('paste', function () {
 		setTimeout(fetchRecipeDataFromUrl, 0);
@@ -14,6 +16,9 @@ $(function () {
 
 	function fetchRecipeDataFromUrl() {
 		$urlInput.closest('.input').addClass('loading');
+		/**
+		 * @param {{effort:string, title:string, description:string, ingredients:array, images:array}} response
+		 */
 		$.get(fetchUrl, {url: $urlInput.val()}, function (response) {
 			console.info(response);
 			$('#form_label').val(response.title);
@@ -30,8 +35,8 @@ $(function () {
 					return;
 				}
 
-				var input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
-				var toggleIcon = '<i class="white check circle icon">';
+				let input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
+				let toggleIcon = '<i class="white check circle icon">';
 				$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
 			});
 
@@ -39,10 +44,10 @@ $(function () {
 		});
 	}
 
-	$('#form_tagsString').selectize({
+	$formTagsString.selectize({
 		delimiter: ',',
 		persist: false,
-		options: $('#form_tagsString').data('tags-json'),
+		options: $formTagsString.data('tags-json'),
 		create: function (input) {
 			return {
 				value: input,
@@ -51,8 +56,8 @@ $(function () {
 		}
 	});
 
-	$('body').on('click', '.rec-images.grid img', function () {
-		var $input = $(this).closest('.column').find('input');
+	$body.on('click', '.rec-images.grid img', function () {
+		let $input = $(this).closest('.column').find('input');
 		$(this).closest('.column').toggleClass('active');
 
 		if ($input.attr('disabled'))
@@ -66,11 +71,11 @@ $(function () {
 	});
 
 	// Multiple images preview in browser
-	var imagesPreview = function (input, placeToInsertImagePreview) {
+	let imagesPreview = function (input, placeToInsertImagePreview) {
 		if (input.files) {
-			var filesAmount = input.files.length;
-			for (var i = 0; i < filesAmount; i++) {
-				var reader = new FileReader();
+			let filesAmount = input.files.length;
+			for (let i = 0; i < filesAmount; i++) {
+				let reader = new FileReader();
 				reader.onload = function (event) {
 					$('<div class="column"><img src="' + event.target.result + '"></div>').appendTo(placeToInsertImagePreview);
 				};
@@ -89,34 +94,34 @@ $(function () {
 	}
 
 	function addIngredient($list, value) {
-		var counter = $list.data('widget-counter') | $list.children().length;
+		let counter = $list.data('widget-counter') | $list.children().length;
 		if (!counter) {
 			counter = $list.children().length;
 		}
 
-		var newWidget = $list.attr('data-prototype');
+		let newWidget = $list.attr('data-prototype');
 		newWidget = newWidget.replace(/__ingredientcounter__/g, counter);
 		counter++;
 		$list.data(' widget-counter', counter);
 
-		var $newElem = $(newWidget);
+		let $newElem = $(newWidget);
 		$newElem.find('input').val(value);
 		$newElem.appendTo($list);
 	}
 
 	function addIngredientGroup(value, addEmptyIngredient = true) {
-		var $list = $('#form_ingredientGroups');
-		var counter = $list.data('widget-counter') | $list.children().length;
+		let $list = $('#form_ingredientGroups');
+		let counter = $list.data('widget-counter') | $list.children().length;
 		if (!counter) {
 			counter = $list.children().length;
 		}
 
-		var newWidget = $list.attr('data-prototype');
+		let newWidget = $list.attr('data-prototype');
 		newWidget = newWidget.replace(/__groupcounter__/g, counter);
 		counter++;
 		$list.data('widget-counter', counter);
 
-		var $newIngredientGroup = $(newWidget);
+		let $newIngredientGroup = $(newWidget);
 		$newIngredientGroup.find('input').val(value);
 		$newIngredientGroup.appendTo($list);
 
@@ -125,26 +130,26 @@ $(function () {
 		}
 	}
 
-	$('body').on('keydown', '.ingredients input', function () {
+	$body.on('keydown', '.ingredients input', function () {
 		console.info($(this).closest('.ingredient'));
 		if ($(this).closest('.ingredient').is(':last-child')) {
 			addIngredient($(this).closest('.ingredientList'));
 		}
 	});
-	$('body').on('keydown', '.groupLabelInput input', function () {
+	$body.on('keydown', '.groupLabelInput input', function () {
 		if ($(this).closest('.ingredientgroup').is(':last-child')) {
 			addIngredientGroup();
 		}
 	});
 
-	$('body').on('click', '.remove-row', function (e) {
+	$body.on('click', '.remove-row', function (e) {
 		e.preventDefault();
 		$(this).closest('.removable').slideUp(function () {
 			$(this).remove();
 		});
 	});
 
-	$('.ingredientList').each(function (index, element) {
+	$ingredientList.each(function (index, element) {
 		new Sortable(element, {
 			group: "sortable-ingredients",
 			sort: true,
@@ -169,14 +174,14 @@ $(function () {
 	function resetIngredientIds() {
 		$('.ingredientgroup').each(function (groupIndex, groupElement) {
 			console.info('replacing group:', groupElement);
-			var groupPrefix = 'form[ingredientGroups][' + groupIndex + ']';
+			let groupPrefix = 'form[ingredientGroups][' + groupIndex + ']';
 			$(groupElement).find('input[name^="form[ingredientGroups]"]').each(function (inputIndex, input) {
-				var newName = $(input).attr('name').replace(/form\[ingredientGroups\]\[\d+\]/, groupPrefix);
+				let newName = $(input).attr('name').replace(/form\[ingredientGroups]\[\d+]/, groupPrefix);
 				$(input).attr('name', newName);
 			});
 
 			$(groupElement).find('input[name*="[ingredients]"]').each(function (ingredientIndex, input) {
-				var newName = $(input).attr('name').replace(/\[ingredients\]\[\d+\]/, '[ingredients][' + ingredientIndex + ']');
+				let newName = $(input).attr('name').replace(/\[ingredients]\[\d+]/, '[ingredients][' + ingredientIndex + ']');
 				console.info('replacing ingredient:', ingredientIndex, newName);
 				$(input).attr('name', newName);
 			});
@@ -184,7 +189,7 @@ $(function () {
 	}
 
 	// add empty inputs for easier adding
-	$('.ingredientList').each(function (index, elem) {
+	$ingredientList.each(function (index, elem) {
 		addIngredient($(elem));
 	});
 	addIngredientGroup();
