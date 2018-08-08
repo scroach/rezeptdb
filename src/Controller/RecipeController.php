@@ -99,11 +99,7 @@ class RecipeController extends Controller {
 	 * @Route("/recipes/add", name="addRecipe")
 	 */
 	public function addAction(Request $request) {
-		$recipe = new Recipe();
-		$group = new IngredientGroup();
-		$group->addIngredient(new Ingredient());
-		$recipe->addIngredientGroup($group);
-		return $this->formAction($request, $recipe);
+		return $this->formAction($request, new Recipe());
 	}
 
 	/**

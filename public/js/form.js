@@ -22,7 +22,7 @@ $(function () {
 
 			clearIngredients();
 			response.ingredients.forEach(function (ingredient) {
-				addIngredient(ingredient.amount + ' ' + ingredient.label);
+				addIngredient($('.ingredientList:first'), ingredient.amount + ' ' + ingredient.label);
 			});
 
 			response.images.forEach(function (imgUrl) {
@@ -85,6 +85,7 @@ $(function () {
 
 	function clearIngredients() {
 		$('.ingredients [data-prototype]').empty();
+		addIngredientGroup(null, false);
 	}
 
 	function addIngredient($list, value) {
@@ -103,7 +104,7 @@ $(function () {
 		$newElem.appendTo($list);
 	}
 
-	function addIngredientGroup(value) {
+	function addIngredientGroup(value, addEmptyIngredient = true) {
 		var $list = $('#form_ingredientGroups');
 		var counter = $list.data('widget-counter') | $list.children().length;
 		if (!counter) {
@@ -118,7 +119,10 @@ $(function () {
 		var $newIngredientGroup = $(newWidget);
 		$newIngredientGroup.find('input').val(value);
 		$newIngredientGroup.appendTo($list);
-		addIngredient($newIngredientGroup.find('.ingredientList'));
+
+		if(addEmptyIngredient) {
+			addIngredient($newIngredientGroup.find('.ingredientList'));
+		}
 	}
 
 	$('body').on('keydown', '.ingredients input', function () {
