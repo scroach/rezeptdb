@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-
 {% form_theme form _self %}
 
 {% block string_widget %}
@@ -28,9 +27,32 @@
 {% endblock %}
 
 
-{% block _form_ingredients_entry_widget %}
-	<div class="ui icon input">
+{% block ingredient_row %}
+	<div class="ingredient removable">
+	<div class="ui left labeled icon input">
+		<div class="ui basic label">
+			<i class="ui bars icon"></i>
+		</div>
 		{{ form_widget(form.label) }}
+		<i class="link times red icon remove-row"></i>
+	</div>
+	</div>
+{% endblock %}
+
+{% block ingredient_group_row %}
+	<div class="ingredientgroup removable">
+		{{ form_label(form) }}
+		{{ form_errors(form) }}
+		{{ form_widget(form) }}
+	</div>
+{% endblock %}
+
+{% block _form_ingredientGroups_entry_label_widget %}
+	<div class="ui left labeled icon input groupLabelInput">
+		<div class="ui basic label">
+			<i class="ui bars icon ingredientGroupDragHandle"></i>
+		</div>
+		{{ form_widget(form) }}
 		<i class="link times red icon remove-row"></i>
 	</div>
 {% endblock %}
@@ -40,8 +62,7 @@
 	<h1 class="ui center aligned header">Rezept anlegen</h1>
 
 	<div class="ui segment">
-
-		{{ form_start(form) }}
+		{{ form_start(form, {'attr': {'data-fetch-url':  path('parseRecipeUrl') }}) }}
 		{{ form_errors(form) }}
 		<div class="ui form error">
 			<div class="two fields">
@@ -57,19 +78,15 @@
 					<label><i class="tags icon"></i> Tags</label>
 					<div class="ui fluid right labeled left icon input">
 						{{ form_errors(form.tagsString) }}
-						{{ form_widget(form.tagsString) }}
+						{{ form_widget(form.tagsString, {'attr': {'data-tags-json':existingTags|json_encode|raw}}) }}
 					</div>
 				</div>
 			</div>
 			<div class="fields">
 				<div class="four wide field ingredients">
-					{{ form_label(form.ingredients) }}
-					{{ form_errors(form.ingredients) }}
-					{{ form_widget(form.ingredients) }}
-
-					<a class="add-collection-item small ui button" data-list="#{{ form.ingredients.vars.id }}" href="#">
-						<i class="plus icon"></i> Weitere Zutat
-					</a>
+					{{ form_label(form.ingredientGroups) }}
+					{{ form_errors(form.ingredientGroups) }}
+					{{ form_widget(form.ingredientGroups) }}
 				</div>
 				<div class="eight wide field">
 					{{ form_label(form.label) }}
@@ -131,141 +148,8 @@
 		{{ form_end(form, {'render_rest': false}) }}
 	</div>
 
-	<script type="text/javascript">
-		$(function () {
-
-			var fetchUrl = '{{ path('parseRecipeUrl') }}';
-			var urlInput = $('input[name*="Url"]');
-
-			urlInput.on('paste', function () {
-				setTimeout(function () {
-					urlInput.closest('.input').addClass('loading');
-					$.get(fetchUrl, {url: urlInput.val()}, function (response) {
-						console.info(response);
-						$('#form_label').val(response.title);
-						$('#form_description').val(response.description);
-                        $('#form_effort').val(response.effort);
-
-						clearIngredients();
-						response.ingredients.forEach(function (ingredient) {
-							addIngredient(ingredient.amount + ' ' + ingredient.label);
-						});
-
-						response.images.forEach(function (imgUrl) {
-							if (!imgUrl) {
-								return;
-							}
-
-							var input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
-							var toggleIcon = '<i class="white check circle icon">';
-							$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
-						});
-
-						urlInput.closest('.input').removeClass('loading');
-					});
-
-				}, 0);
-			});
-
-			$('body').on('click', '.rec-images.grid img', function () {
-				var $input = $(this).closest('.column').find('input');
-				$(this).closest('.column').toggleClass('active');
-
-				if ($input.attr('disabled'))
-					$input.removeAttr('disabled');
-				else
-					$input.attr('disabled', 'disabled');
-			});
-
-			$('#form_tagsString').selectize({
-				delimiter: ',',
-				persist: false,
-				options: {{ existingTags|json_encode|raw }},
-				create: function (input) {
-					return {
-						value: input,
-						text: input
-					}
-				}
-			});
-
-			function clearIngredients() {
-				$('.ingredients [data-prototype]').empty();
-			}
-
-			function addIngredient(value) {
-				var $list = $('.ingredients [data-prototype]');
-				var counter = $list.data('widget-counter') | $list.children().length;
-				if (!counter) {
-					counter = $list.children().length;
-				}
-
-				var newWidget = $list.attr('data-prototype');
-				newWidget = newWidget.replace(/__name__/g, counter);
-				counter++;
-				$list.data(' widget-counter', counter);
-
-				var tags = $list.attr('data-widget-tags') || '<div></div>';
-				var newElem = $(tags).html(newWidget);
-
-				newElem.find('input').val(value);
-				newElem.appendTo($list);
-			}
-
-			$('.add-collection-item').click(function (e) {
-				e.preventDefault();
-				addIngredient();
-			});
-
-			$('body').on('keydown', '.ingredients input', function () {
-				if ($(this).is('.ingredients input:last')) {
-					addIngredient();
-				}
-			});
-
-			$('body').on('click', '.remove-row', function (e) {
-				e.preventDefault();
-				$(this).closest('div').remove();
-			});
-
-
-			// Multiple images preview in browser
-			var imagesPreview = function (input, placeToInsertImagePreview) {
-				if (input.files) {
-					var filesAmount = input.files.length;
-					for (var i = 0; i < filesAmount; i++) {
-						var reader = new FileReader();
-						reader.onload = function (event) {
-							$('<div class="column"><img src="' + event.target.result + '"></div>').appendTo(placeToInsertImagePreview);
-						};
-						reader.readAsDataURL(input.files[i]);
-					}
-				}
-
-			};
-
-			$('#form_files').on('change', function () {
-				imagesPreview(this, 'div.gallery');
-			});
-		});
-	</script>
-	<style type="text/css">
-		.selectize-control {
-			width: 100%;
-		}
-
-		.gallery.ui.grid {
-			margin-top:auto;
-			margin-bottom:auto;
-		}
-
-		.gallery img {
-			max-width: 100%;
-		}
-
-		.ingredients .button {
-			margin-top: 10px;
-		}
-	</style>
+	<link rel="stylesheet" href="{{ asset('css/form.css') }}">
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
+	<script type="text/javascript" src="{{ asset('js/form.js') }}"></script>
 
 {% endblock %}

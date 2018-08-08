@@ -1,0 +1,34 @@
+.selectize-control {
+    width: 100%;
+}
+
+.gallery.ui.grid {
+    margin-top:auto;
+    margin-bottom:auto;
+}
+
+.gallery img {
+    max-width: 100%;
+}
+
+.ingredients .button {
+    margin-top: 10px;
+}
+
+.ingredientList {
+    padding-left: 1em;
+}
+
+.ingredients .ingredient {
+    margin-top: 0.5em;
+}
+
+.sortable-ghost {
+    opacity: 0.2;
+}
+
+.ui.bars.icon {
+    cursor: move;
+    margin: 0;
+    padding: 0;
+}

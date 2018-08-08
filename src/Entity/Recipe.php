@@ -51,9 +51,9 @@ class Recipe {
 	private $tags;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Ingredient", mappedBy="recipe", cascade={"persist"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="App\Entity\IngredientGroup", mappedBy="recipe", cascade={"persist"}, orphanRemoval=true)
 	 */
-	private $ingredients = [];
+	private $ingredientGroups = [];
 
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="recipe", cascade={"persist"})
@@ -90,7 +90,7 @@ class Recipe {
 	 */
 	public function __construct() {
 		$this->tags = new ArrayCollection();
-		$this->ingredients = new ArrayCollection();
+		$this->ingredientGroups = new ArrayCollection();
 		$this->images = new ArrayCollection();
 	}
 
@@ -199,42 +199,29 @@ class Recipe {
 	}
 
 	/**
-	 * @return Ingredient[]|ArrayCollection
+	 * @return IngredientGroup[]|ArrayCollection
 	 */
-	public function getIngredients() {
-		return $this->ingredients;
+	public function getIngredientGroups() {
+		return $this->ingredientGroups;
 	}
 
-	public function getIngredientsText() {
-		$result = [];
-		foreach ($this->getIngredients() as $ingredient) {
-			$result[] = $ingredient->getAmount().' '.$ingredient->getLabel();
-		}
-		return $result;
+
+	public function addIngredientGroup(IngredientGroup $group) {
+		$this->ingredientGroups->add($group);
+		// set the association correctly on the owning side
+		$group->setRecipe($this);
 	}
 
-	public function setIngredientsText($ingredientsList) {
-		$this->ingredients->clear();
-		foreach ($ingredientsList as $ingredient) {
-			if ($ingredient) {
-				$this->ingredients->add(new Ingredient($this, $ingredient));
-			}
-		}
-	}
-
-	public function addIngredient(Ingredient $ingredient) {
-		$this->ingredients->add($ingredient);
-	}
-
-	public function removeIngredient(Ingredient $ingredient) {
-		$this->ingredients->removeElement($ingredient);
+	public function removeIngredientGroup(IngredientGroup $group) {
+		$this->ingredientGroups->removeElement($group);
 	}
 
 	/**
-	 * @param mixed $ingredients
+	 * @param IngredientGroup[] $ingredientGroups
 	 */
-	public function setIngredients($ingredients): void {
-		$this->ingredients = $ingredients;
+	public function setIngredientGroups($ingredientGroups): void {
+		$this->ingredientGroups = $ingredientGroups;
+		~r($this->ingredientGroups);
 	}
 
 	/**
@@ -290,6 +277,22 @@ class Recipe {
 	 */
 	public function setDeletedAt($deletedAt): void {
 		$this->deletedAt = $deletedAt;
+	}
+
+	public function getIngredientsCount() {
+		return array_reduce($this->ingredientGroups->toArray(), function (int $count, IngredientGroup $group) {
+			return $count + count($group->getIngredients());
+		}, 0);
+	}
+
+	public function removeEmptyIngredients() {
+		foreach ($this->getIngredientGroups() as $ingredientGroup) {
+			foreach ($ingredientGroup->getIngredients() as $ingredient) {
+				if (trim($ingredient->getLabel()) == '') {
+					$ingredientGroup->removeIngredient($ingredient);
+				}
+			}
+		}
 	}
 
 }

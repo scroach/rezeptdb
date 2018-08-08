@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -61,6 +62,41 @@ class RecipeRepository extends ServiceEntityRepository {
 		}
 
 		return $recipes;
+	}
+
+	public function fetchForIndex($excludeIds = []) {
+		$query = $this->createQueryBuilder('r')->select('r, groups, ingredients')
+			->leftJoin('r.ingredientGroups', 'groups')
+			->leftJoin('groups.ingredients', 'ingredients')
+			->orderBy('r.modified', 'DESC')
+			->setMaxResults(20);
+
+		if ($excludeIds) {
+			$query->where('r.id NOT IN (:excludedIds)')->setParameter('excludedIds', $excludeIds);
+		}
+
+		// use Paginator for joined results - normal joined query with max results wouldn't produce the expected result
+		$recipes = iterator_to_array(new Paginator($query, $fetchJoin = true));
+		$recipeIds = [];
+		foreach ($recipes as $recipe) {
+			$recipeIds[] = $recipe->getId();
+		}
+
+		$this->preloadAssociation($recipeIds, 'images');
+		$this->preloadAssociation($recipeIds, 'tags');
+
+		return $recipes;
+	}
+
+	/**
+	 * Applying the multi step hydration explained here: https://ocramius.github.io/blog/doctrine-orm-optimization-hydration/
+	 * @param $recipeIds
+	 * @param $association
+	 */
+	private function preloadAssociation($recipeIds, $association): void {
+		$this->createQueryBuilder('r')->select("PARTIAL r.{id}, $association")
+			->leftJoin("r.$association", $association)->where('r.id IN (:recipeIds)')->setParameter('recipeIds', $recipeIds)
+			->getQuery()->getResult();
 	}
 
 }

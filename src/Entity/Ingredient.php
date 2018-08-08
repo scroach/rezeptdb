@@ -17,9 +17,10 @@ class Ingredient {
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Recipe", inversedBy="ingredients")
+	 * @var IngredientGroup
+	 * @ORM\ManyToOne(targetEntity="App\Entity\IngredientGroup", inversedBy="ingredients")
 	 */
-	private $recipe;
+	private $group;
 
 	/**
 	 * @ORM\Column(type="string", length=50)
@@ -31,13 +32,8 @@ class Ingredient {
 	 */
 	private $label;
 
-	/**
-	 * Ingredient constructor.
-	 * @param $amount
-	 * @param $label
-	 */
-	public function __construct(Recipe $recipe = null, $label = null, $amount = null) {
-		$this->recipe = $recipe;
+	public function __construct(IngredientGroup $group = null, $label = null, $amount = null) {
+		$this->group = $group;
 		$this->amount = $amount;
 		$this->label = $label;
 	}
@@ -45,32 +41,19 @@ class Ingredient {
 	public function getId() {
 		return $this->id;
 	}
+
 	public function setId($id) {
-		return $this->id;
+		$this->id = $id;
 	}
 
 	public function getLabel(): ?string {
 		return $this->label;
 	}
 
-	public function setLabel(string $label): self {
+	public function setLabel(?string $label): self {
 		$this->label = $label;
 
 		return $this;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getRecipe() {
-		return $this->recipe;
-	}
-
-	/**
-	 * @param mixed $recipe
-	 */
-	public function setRecipe($recipe): void {
-		$this->recipe = $recipe;
 	}
 
 	/**
@@ -85,6 +68,20 @@ class Ingredient {
 	 */
 	public function setAmount($amount): void {
 		$this->amount = $amount;
+	}
+
+	/**
+	 * @return IngredientGroup
+	 */
+	public function getGroup(): IngredientGroup {
+		return $this->group;
+	}
+
+	/**
+	 * @param IngredientGroup $group
+	 */
+	public function setGroup(IngredientGroup $group): void {
+		$this->group = $group;
 	}
 
 }
