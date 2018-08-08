@@ -23,8 +23,7 @@ class Tag {
 	private $label;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Recipe")
-	 * @ORM\JoinTable(name="recipes_tags")
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Recipe", mappedBy="tags"))
 	 */
 	private $recipes;
 

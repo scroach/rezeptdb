@@ -45,7 +45,7 @@ class Recipe {
 	private $originUrl;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Tag")
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="recipes")
 	 * @ORM\JoinTable(name="recipes_tags")
 	 */
 	private $tags;
