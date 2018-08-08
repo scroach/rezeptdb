@@ -49,7 +49,7 @@ class RecipeController extends Controller {
 	 * @Route("/", name="recipeIndex")
 	 */
 	public function indexAction() {
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->findBy([], ['modified' => 'DESC'], 20);
+		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex();
 		$randomRecipes = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r')->orderBy('RAND()')->setMaxResults(4)->getQuery()->getResult();
 		return $this->render('index.html.twig', array(
 			'recipes' => $recipes,
@@ -62,10 +62,7 @@ class RecipeController extends Controller {
 	 */
 	public function loadMoreRecipesAction(Request $request) {
 		$excludeIds = $request->get('excludeIds');
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r')
-			->where('r.id NOT IN (:excludedIds)')->setParameter('excludedIds', $excludeIds)
-			->orderBy('r.modified', 'DESC')
-			->setMaxResults(20)->getQuery()->getResult();
+		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex($excludeIds);
 
 		if (empty($recipes)) {
 			return new JsonResponse(['message' => 'Keine Rezepte mehr :(']);
