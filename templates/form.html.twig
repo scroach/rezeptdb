@@ -29,17 +29,19 @@
 
 
 {% block ingredient_row %}
-	<div class="ui left labeled icon input ingredient">
+	<div class="ingredient removable">
+	<div class="ui left labeled icon input">
 		<div class="ui basic label">
 			<i class="ui bars icon"></i>
 		</div>
 		{{ form_widget(form.label) }}
 		<i class="link times red icon remove-row"></i>
 	</div>
+	</div>
 {% endblock %}
 
 {% block ingredient_group_row %}
-	<div class="ingredientgroup">
+	<div class="ingredientgroup removable">
 		{{ form_label(form) }}
 		{{ form_errors(form) }}
 		{{ form_widget(form) }}
@@ -47,9 +49,9 @@
 {% endblock %}
 
 {% block _form_ingredientGroups_entry_label_widget %}
-	<div class="ui left labeled icon input">
+	<div class="ui left labeled icon input groupLabelInput">
 		<div class="ui basic label">
-		<i class="ui bars icon"></i>
+			<i class="ui bars icon ingredientGroupDragHandle"></i>
 		</div>
 		{{ form_widget(form) }}
 		<i class="link times red icon remove-row"></i>
@@ -87,13 +89,6 @@
 					{{ form_label(form.ingredientGroups) }}
 					{{ form_errors(form.ingredientGroups) }}
 					{{ form_widget(form.ingredientGroups) }}
-
-					<a class="add-collection-item small ui button" data-list="#{{ form.ingredientGroups.vars.id }}" href="#">
-						<i class="plus icon"></i> Weitere Zutat
-					</a>
-					<a class="add-ingredient-group small ui button" data-list="#{{ form.ingredientGroups.vars.id }}" href="#">
-						<i class="plus icon"></i> Weitere Gruppe
-					</a>
 				</div>
 				<div class="eight wide field">
 					{{ form_label(form.label) }}
@@ -230,11 +225,9 @@
 				counter++;
 				$list.data(' widget-counter', counter);
 
-				var tags = $list.attr('data-widget-tags') || '<div></div>';
-				var newElem = $(tags).html(newWidget);
-
-				newElem.find('input').val(value);
-				newElem.appendTo($list);
+				var $newElem = $(newWidget);
+				$newElem.find('input').val(value);
+				$newElem.appendTo($list);
 			}
 
 			function addIngredientGroup(value) {
@@ -249,34 +242,30 @@
 				counter++;
 				$list.data('widget-counter', counter);
 
-				var tags = $list.attr('data-widget-tags') || '<div></div>';
-				var $newIngredientGroup = $(tags).html(newWidget);
+				var $newIngredientGroup = $(newWidget);
 				$newIngredientGroup.find('input').val(value);
 				$newIngredientGroup.appendTo($list);
 				addIngredient($newIngredientGroup.find('.ingredientList'));
 			}
 
-			$('.add-collection-item').click(function (e) {
-				e.preventDefault();
-				addIngredient($('.ingredientList').first());
-			});
-
-			$('.add-ingredient-group').click(function (e) {
-				e.preventDefault();
-				addIngredientGroup();
-			});
-
 			$('body').on('keydown', '.ingredients input', function () {
-				if ($(this).is('.ingredients input:last')) {
+				console.info($(this).closest('.ingredient'));
+				if ($(this).closest('.ingredient').is(':last-child')) {
 					addIngredient($(this).closest('.ingredientList'));
+				}
+			});
+			$('body').on('keydown', '.groupLabelInput input', function () {
+				if ($(this).closest('.ingredientgroup').is(':last-child')) {
+					addIngredientGroup();
 				}
 			});
 
 			$('body').on('click', '.remove-row', function (e) {
 				e.preventDefault();
-				$(this).closest('div').remove();
+				$(this).closest('.removable').slideUp(function () {
+					$(this).remove();
+				});
 			});
-
 
 			// Multiple images preview in browser
 			var imagesPreview = function (input, placeToInsertImagePreview) {
@@ -297,35 +286,51 @@
 				imagesPreview(this, 'div.gallery');
 			});
 
+			$('.ingredientList').each(function (index, element) {
+				new Sortable(element, {
+					group: "sortable-ingredients",
+					sort: true,
+					animation: 150,
+					handle: ".bars",
+					draggable: ".ingredient",
+					onSort: resetIngredientIds
+				});
+			});
+
+			new Sortable(document.getElementsByClassName('ingredientGroupList')[0], {
+				// sort: true,
+				handle: ".ingredientGroupDragHandle",
+				animation: 150,
+				draggable: ".ingredientgroup",
+				onSort: resetIngredientIds
+			});
+
+			/**
+			 * Loops over all ingredientGroups and ingredients and sets new ids in the names of the inputs.
+			 */
+			function resetIngredientIds() {
+				$('.ingredientgroup').each(function (groupIndex, groupElement) {
+					console.info('replacing group:', groupElement);
+					var groupPrefix = 'form[ingredientGroups][' + groupIndex + ']';
+					$(groupElement).find('input[name^="form[ingredientGroups]"]').each(function (inputIndex, input) {
+						var newName = $(input).attr('name').replace(/form\[ingredientGroups\]\[\d+\]/, groupPrefix);
+						$(input).attr('name', newName);
+					});
+
+					$(groupElement).find('input[name*="[ingredients]"]').each(function (ingredientIndex, input) {
+						var newName = $(input).attr('name').replace(/\[ingredients\]\[\d+\]/, '[ingredients][' + ingredientIndex + ']');
+						console.info('replacing ingredient:', ingredientIndex, newName);
+						$(input).attr('name', newName);
+					});
+				});
+			}
 
 
-
-
-
-
-
-
-            var sortable = new Sortable(document.getElementsByClassName('ingredientList')[0], {
-                group: "name",  // or { name: "...", pull: [true, false, clone], put: [true, false, array] }
-                sort: true,  // sorting inside list
-                animation: 150,  // ms, animation speed moving items when sorting, `0` — without animation
-                handle: ".bars",  // Drag handle selector within list items
-                draggable: ".ingredient",  // Specifies which items inside the element should be draggable
-                ghostClass: "sortable-ghost",  // Class name for the drop placeholder
-                chosenClass: "sortable-chosen",  // Class name for the chosen item
-                dragClass: "sortable-drag",  // Class name for the dragging item
-                dataIdAttr: 'data-id',
-
-                setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
-                    dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
-                },
-
-                // Called by any change to the list (add / update / remove)
-                onSort: function (/**Event*/evt) {
-                    // same properties as onEnd
-                },
-
-            });
+			// add empty inputs for easier adding
+			$('.ingredientList').each(function (index, elem) {
+				addIngredient($(elem));
+			});
+			addIngredientGroup();
 		});
 	</script>
 	<style type="text/css">
@@ -350,12 +355,18 @@
 			padding-left: 1em;
 		}
 
-		.ingredients .input.ingredient {
+		.ingredients .ingredient {
 			margin-top: 0.5em;
 		}
 
 		.sortable-ghost {
 			opacity: 0.2;
+		}
+
+		.ui.bars.icon {
+			cursor: move;
+			margin: 0;
+			padding: 0;
 		}
 	</style>
 

@@ -285,4 +285,14 @@ class Recipe {
 		}, 0);
 	}
 
+	public function removeEmptyIngredients() {
+		foreach ($this->getIngredientGroups() as $ingredientGroup) {
+			foreach ($ingredientGroup->getIngredients() as $ingredient) {
+				if (trim($ingredient->getLabel()) == '') {
+					$ingredientGroup->removeIngredient($ingredient);
+				}
+			}
+		}
+	}
+
 }

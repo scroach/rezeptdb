@@ -245,23 +245,12 @@ class RecipeController extends Controller {
 
 		if ($form->isSubmitted() && $form->isValid()) {
 
-            \ref::config('showMethods', false);
-            \ref::config('showPrivateMembers', true);
-
-            r($_POST);
-            r($recipe->getIngredientGroups()->get(0)->getIngredients()->toArray());
-            ~r($recipe->getIngredientGroups()->toArray());
 
 			$this->processSubmittedTags($recipe);
 			$this->processFileUploads($recipe);
 			$this->processRemoteImages($recipe);
 			$this->removeNoLongerUsedImages($recipe);
-
-			//TODO replace this hack?
-//			foreach ($recipe->getIngredients() as $ingredient) {
-//				$ingredient->setRecipe($recipe);
-//			}
-
+			$recipe->removeEmptyIngredients();
 
 			$this->getDoctrine()->getManager()->persist($recipe);
 			$this->getDoctrine()->getManager()->flush();
