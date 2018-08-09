@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS `recipes` (
   FULLTEXT KEY `label_description_origin_url` (`label`,`description`,`origin_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `tags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `label` (`label`),
+  FULLTEXT KEY `fulltext_label` (`label`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `recipes_tags` (
   `recipe_id` int(11),
   `tag_id` int(11),
@@ -60,14 +68,6 @@ CREATE TABLE IF NOT EXISTS `recipes_tags` (
   KEY `FK_recipes_tags_tags` (`tag_id`),
   CONSTRAINT `FK_recipes_tags_recipes` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE,
   CONSTRAINT `FK_recipes_tags_tags` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `tags` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `label` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `label` (`label`),
-  FULLTEXT KEY `fulltext_label` (`label`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `users` (
