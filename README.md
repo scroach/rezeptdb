@@ -8,8 +8,11 @@ git clone https://github.com/scroach/rezeptdb
 # install dependencies
 composer install
 
-# copy the env file and update database settings
-cp .env.dist .env && vim .env
+# update database settings
+vim .env
+
+# create database if it does not exist
+php bin/console doctrine:database:create
 
 # run database migrations
 php bin/console doctrine:migrations:migrate
