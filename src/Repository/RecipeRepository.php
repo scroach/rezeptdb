@@ -24,7 +24,8 @@ class RecipeRepository extends ServiceEntityRepository {
 		$qb = $this->createQueryBuilder('r');
 		$query = $qb
 			->select("MAX($matchFulltext) AS recipeScore, r as recipe")
-			->join('r.ingredients', 'i')
+			->join('r.ingredientGroups', 'ig')
+			->join('ig.ingredients', 'i')
 			->join('r.tags', 't')
 			->where("$matchFulltext> 0")
 			->groupBy('r.id')
