@@ -39,7 +39,8 @@
 					<div id="gallery" style="display:none;">
 						{% for image in recipe.images %}
 							{% if image.localFileName %}
-								<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+								<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(200,200) }}"
+									 data-image="{{ image(upload_directory~'/'~image.localFileName).cropResize(1500,1500) }}"/>
 							{% else %}
 								<img src="{{ image.url }}"/>
 							{% endif %}

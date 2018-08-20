@@ -9,9 +9,9 @@
 			{% set image = recipe.images | first %}
 			{% if (image) %}
 				{% if image.localFileName %}
-					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(300,300) }}"/>
+					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(600,600) }}"/>
 				{% else %}
-					<img src="{{ image(image.url).cropResize(300,300) }}"/>
+					<img src="{{ image(image.url).cropResize(600,600) }}"/>
 				{% endif %}
 			{% else %}
 				<img src="{{ asset('images/noimage.png') }}">

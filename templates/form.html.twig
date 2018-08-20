@@ -129,7 +129,7 @@
 						{% for image in recipe.images %}
 							<div class="column active">
 								{% if image.localFileName %}
-									<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+									<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(200,200) }}"/>
 								{% else %}
 									<img src="{{ image.url }}"/>
 								{% endif %}

@@ -5,7 +5,7 @@
 			{% set image = random(recipe.recipes).images | first %}
 			{% if (image) %}
 				{% if image.localFileName %}
-					<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"/>
+					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(600,600) }}"/>
 				{% else %}
 					<img src="{{ image.url }}"/>
 				{% endif %}

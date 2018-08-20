@@ -27,7 +27,7 @@
 				{% for image in recipe.images %}
 					<div class="four wide column" data-id="{{ image.id }}">
 						{% if image.localFileName %}
-							<img src="{{ asset(upload_directory~'/'~image.localFileName) }}"
+							<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(600,600) }}"
 								 data-id="{{ image.id }}"/>
 						{% else %}
 							<img src="{{ image.url }}" data-id="{{ image.id }}"/>
