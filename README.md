@@ -16,6 +16,10 @@ php bin/console doctrine:database:create
 
 # run database migrations
 php bin/console doctrine:migrations:migrate
+
+# import doctrine test fixtures into database 
+php bin/console doctrine:fixtures:load
+
 ```
 
 # Docs

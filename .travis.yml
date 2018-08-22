@@ -2,5 +2,16 @@ language: php
 php:
   - '7.1'
   - '7.2'
-before_script: composer install
-script: vendor/bin/phpunit tests
+services:
+  - mysql
+before_script:
+  - composer install
+  - mysql -e 'CREATE DATABASE rezeptdb;'
+  - rm .env
+  - echo 'DATABASE_URL=mysql://root:@127.0.0.1:3306/rezeptdb' >> .env
+  - echo 'APP_ENV=test' >> .env
+  - cat .env
+  - cp phpunit.xml.dist phpunit.xml
+  - php bin/console doctrine:migrations:migrate --no-interaction
+  - php bin/console doctrine:fixtures:load --no-interaction
+script: vendor/bin/phpunit --configuration phpunit.xml

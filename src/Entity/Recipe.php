@@ -94,9 +94,13 @@ class Recipe {
 		$this->images = new ArrayCollection();
 	}
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId() {
+        return $this->id;
+    }
+
+    public function setId(int $id) {
+        $this->id = $id;
+    }
 
 	public function getLabel(): ?string {
 		return $this->label;

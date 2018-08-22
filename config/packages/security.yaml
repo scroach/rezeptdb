@@ -16,6 +16,7 @@ security:
         main:
             provider: doctrine_user_provider
             anonymous: true
+            http_basic: ~
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
