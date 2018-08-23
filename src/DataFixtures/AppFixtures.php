@@ -29,14 +29,11 @@ class AppFixtures extends Fixture
         $metadata = $manager->getClassMetaData(get_class($recipe));
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         $metadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
-        $manager->flush();
-
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO);
-        $metadata->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator());
 
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 2; $i <= 20; $i++) {
             $recipe = new Recipe();
+            $recipe->setId($i);
             $recipe->setLabel('Rezept');
             $recipe->setDescription('123 test');
             $recipe->setEffort(10);

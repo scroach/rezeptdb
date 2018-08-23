@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class RecipeControllerTest extends WebTestCase
 {
@@ -29,6 +30,23 @@ class RecipeControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/recipes/delete/1');
         self::assertTrue($this->client->getResponse()->isRedirect('/'));
+    }
+
+    public function testLoadMoreRecipes()
+    {
+        /** @var Crawler $crawler */
+        $url = '/recipes/loadMoreRecipes';
+        $crawler = $this->client->xmlHttpRequest('GET', $url);
+        self::assertEquals(20, $crawler->filter('.ui.card')->count());
+        self::assertEquals(1, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
+
+        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1,10)));
+        self::assertEquals(10, $crawler->filter('.ui.card')->count());
+        self::assertEquals(11, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
+
+        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1,20)));
+        self::assertEquals(0, $crawler->filter('.ui.card')->count());
+        self::assertEquals('{"message":"Keine Rezepte mehr :("}', $this->client->getResponse()->getContent());
     }
 
 
