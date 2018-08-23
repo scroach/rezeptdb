@@ -1,11 +1,15 @@
 language: php
+
 php:
   - '7.1'
   - '7.2'
+
 services:
   - mysql
+
 before_script:
   - composer install
+  - composer require php-coveralls/php-coveralls
   - mysql -e 'CREATE DATABASE rezeptdb;'
   - rm .env
   - echo 'DATABASE_URL=mysql://root:@127.0.0.1:3306/rezeptdb' >> .env
@@ -14,4 +18,11 @@ before_script:
   - cp phpunit.xml.dist phpunit.xml
   - php bin/console doctrine:migrations:migrate --no-interaction
   - php bin/console doctrine:fixtures:load --no-interaction
-script: vendor/bin/phpunit --configuration phpunit.xml
+
+script:
+  - mkdir -p build/logs
+  - vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls
+

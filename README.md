@@ -1,4 +1,8 @@
 
+![Travis (.org)](https://img.shields.io/travis/scroach/rezeptdb.svg)
+
+[![Coverage Status](https://coveralls.io/repos/github/scroach/rezeptdb/badge.svg)](https://coveralls.io/github/scroach/rezeptdb)
+
 # How to install
 
 ```
