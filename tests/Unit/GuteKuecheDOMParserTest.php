@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Unit;
 
-use App\Service\ChefkochDOMParser;
 use App\Service\GuteKuecheDOMParser;
 use PHPUnit\Framework\TestCase;
 

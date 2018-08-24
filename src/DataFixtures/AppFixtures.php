@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Recipe;
+use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -30,6 +31,10 @@ class AppFixtures extends Fixture
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         $metadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
 
+        $tag = new Tag();
+        $tag->setLabel('bacon');
+        $manager->persist($tag);
+
 
         for ($i = 2; $i <= 20; $i++) {
             $recipe = new Recipe();
@@ -37,6 +42,7 @@ class AppFixtures extends Fixture
             $recipe->setLabel('Rezept');
             $recipe->setDescription('123 test');
             $recipe->setEffort(10);
+            $recipe->setTags([$tag]);
             $manager->persist($recipe);
         }
 
