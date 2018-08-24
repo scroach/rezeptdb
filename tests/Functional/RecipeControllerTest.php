@@ -28,10 +28,11 @@ class RecipeControllerTest extends AbstractWebTestCase
         self::assertEquals(1, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
 
         $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 10)));
-        self::assertEquals(10, $crawler->filter('.ui.card')->count());
+        self::assertEquals(20, $crawler->filter('.ui.card')->count());
+        echo $this->client->getResponse()->getContent();
         self::assertEquals(11, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
 
-        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 20)));
+        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 100)));
         self::assertEquals(0, $crawler->filter('.ui.card')->count());
         self::assertEquals('{"message":"Keine Rezepte mehr :("}', $this->client->getResponse()->getContent());
     }
@@ -89,5 +90,32 @@ class RecipeControllerTest extends AbstractWebTestCase
 
         self::assertEquals(['Unicorn', 'Pink'],$crawler->filter('.header')->siblings()->filter('.label')->extract(['_text']));
     }
+
+    public function testSearch()
+    {
+        $crawler =$this->client->request('GET', '/recipes/search/TestRecipe');
+        self::assertEquals(29, $crawler->filter('.ui.card')->count());
+    }
+
+    public function testSearchReturnsSingle()
+    {
+        // label
+        $crawler =$this->client->request('GET', '/recipes/search/UnicornLasagna');
+        self::assertEquals(1, $crawler->filter('.ui.card')->count());
+        // description
+        $crawler =$this->client->request('GET', '/recipes/search/nooodles');
+        self::assertEquals(1, $crawler->filter('.ui.card')->count());
+        // ingredient
+        $crawler =$this->client->request('GET', '/recipes/search/beans');
+        self::assertEquals(1, $crawler->filter('.ui.card')->count());
+    }
+
+    public function testSearchNothingFound()
+    {
+        $crawler =$this->client->request('GET', '/recipes/search/SomeWeirdInvalidParameter');
+        self::assertEquals(0, $crawler->filter('.ui.card')->count());
+        $this->assertWarningMessage('Ich konnte leider keine Rezepte mit "SomeWeirdInvalidParameter" finden :\'(');
+    }
+
 
 }

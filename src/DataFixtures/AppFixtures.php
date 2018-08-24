@@ -2,11 +2,14 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Ingredient;
+use App\Entity\IngredientGroup;
 use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class AppFixtures extends Fixture
 {
@@ -25,8 +28,11 @@ class AppFixtures extends Fixture
         $recipe->setLabel('RezeptFixed');
         $recipe->setDescription('123 test');
         $recipe->setEffort(999);
+        // tests? where we go we don't need tests!
+        $recipe->setModified(new \DateTime('2035-10-26 01:21:00'));
         $manager->persist($recipe);
 
+        /** @var ClassMetadataInfo $metadata */
         $metadata = $manager->getClassMetaData(get_class($recipe));
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         $metadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
@@ -35,16 +41,28 @@ class AppFixtures extends Fixture
         $tag->setLabel('bacon');
         $manager->persist($tag);
 
-
-        for ($i = 2; $i <= 20; $i++) {
+        for ($i = 2; $i <= 30; $i++) {
             $recipe = new Recipe();
             $recipe->setId($i);
             $recipe->setLabel('Rezept');
-            $recipe->setDescription('123 test');
+            $recipe->setDescription('TestRecipe');
             $recipe->setEffort(10);
             $recipe->setTags([$tag]);
+            $recipe->setModified((new \DateTime('2035-10-26 01:21:00'))->modify("-$i seconds"));
             $manager->persist($recipe);
         }
+
+        $recipe = new Recipe();
+        $recipe->setId(50);
+        $recipe->setLabel('UnicornLasagna');
+        $recipe->setDescription('With nooodles');
+        $recipe->setEffort(10);
+        $group = new IngredientGroup();
+        $group->addIngredient(new Ingredient($group, 'Beans'));
+        $recipe->addIngredientGroup($group);
+        $recipe->setTags([$tag]);
+        $manager->persist($recipe);
+
 
         $manager->flush();
     }

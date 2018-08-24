@@ -29,6 +29,11 @@ class AbstractWebTestCase extends WebTestCase
         self::assertContains($string, $this->client->getCrawler()->filter('.ui.positive.message')->text());
     }
 
+    public function assertWarningMessage(string $string): void
+    {
+        self::assertContains($string, $this->client->getCrawler()->filter('.ui.warning.message')->text());
+    }
+
     public function assertErrorMessage(string $string): void
     {
         self::assertContains($string, $this->client->getCrawler()->filter('.ui.negative.message')->text());
