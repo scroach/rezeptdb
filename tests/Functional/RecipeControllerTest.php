@@ -56,4 +56,38 @@ class RecipeControllerTest extends AbstractWebTestCase
         $this->assertErrorMessage('Dieser Tag existiert leider nicht!');
     }
 
+    public function testAdd()
+    {
+        $this->client->request('GET', '/recipes/add');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $values = [
+            'images[]' => 'https://images.ichkoche.at/data/image/variations/496x384/2/paprikahendl-rezept-img-19954.jpg',
+            'form' => [
+                'tagsString' => 'Unicorn,Pink',
+                'label' => 'Unicorn Muffins',
+                'description' => 'Mix together and enjoy <3',
+                'effort' => '1337',
+                'ingredientGroups' => [[
+                    'label' => 'Topping',
+                    'ingredients' => [
+                        ['label' => 'Cream'],
+                        ['label' => 'Suagr'],
+                    ]], [
+                    'label' => 'Dough',
+                    'ingredients' => [
+                        ['label' => 'Love'],
+                    ]]]
+            ]
+        ];
+        $this->client->request('POST', '/recipes/add', $values);
+        self::assertTrue($this->client->getResponse()->isRedirect());
+
+        $crawler =$this->client->followRedirect();
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSuccessMessage('Rezept erfolgreich gespeichert!');
+
+        self::assertEquals(['Unicorn', 'Pink'],$crawler->filter('.header')->siblings()->filter('.label')->extract(['_text']));
+    }
+
 }
