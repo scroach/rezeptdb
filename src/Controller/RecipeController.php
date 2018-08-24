@@ -4,12 +4,9 @@
 namespace App\Controller;
 
 use App\Entity\Image;
-use App\Entity\Ingredient;
-use App\Entity\IngredientGroup;
 use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Form\Type\IngredientGroupType;
-use App\Form\Type\IngredientType;
 use App\Service\AbstractDOMParser;
 use App\Service\ChefkochDOMParser;
 use App\Service\GenericWordpressDOMParser;
@@ -161,6 +158,10 @@ class RecipeController extends Controller {
 	 */
 	public function showByTag($tagLabel) {
 		$tag = $this->getDoctrine()->getRepository(Tag::class)->findOneBy(['label' => $tagLabel]);
+		if($tag === null) {
+            $this->addFlash('error', 'Dieser Tag existiert leider nicht!');
+		    return $this->redirectToRoute('listRecipeTags');
+        }
 		$builder = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r');
 		$recipes = $builder->join('r.tags', 't')->where('t = :tag')->setParameter('tag', $tag)->getQuery()->getResult();
 		return $this->render('recipesByTags.html.twig', array(
