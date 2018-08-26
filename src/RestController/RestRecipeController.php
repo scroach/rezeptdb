@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: darks_000
- * Date: 09.08.2018
- * Time: 21:05
- */
 
 namespace App\RestController;
 use App\Entity\Recipe;
@@ -17,8 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RestRecipeController extends FOSRestController
 {
     /**
-     * Create Article.
-     * @FOSRest\Get("/recipesTest")
+     * @FOSRest\Get("/recipes")
      */
     public function getRecipes() {
         $recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex();
