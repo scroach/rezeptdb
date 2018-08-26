@@ -33,4 +33,6 @@ services:
     # please note that last definitions always *replace* previous ones
     app.twig_extension:
         class: App\Twig\AppExtension
+    sensio_framework_extra.view.listener:
+        alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
 
