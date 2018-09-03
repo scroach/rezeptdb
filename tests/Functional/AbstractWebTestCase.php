@@ -10,6 +10,9 @@ class AbstractWebTestCase extends WebTestCase
     /** @var Client */
     public $client;
 
+    /** @var Client */
+    public $clientAnon;
+
     public function setUp()
     {
         $this->client = static::createClient(array(), array(
@@ -17,6 +20,9 @@ class AbstractWebTestCase extends WebTestCase
             'PHP_AUTH_PW' => 'supersecurepassword!',
         ));
         $this->client->catchExceptions(false);
+
+        $this->clientAnon = static::createClient();
+        $this->clientAnon->catchExceptions(false);
     }
 
     public function assertResponseContains(string $string): void
