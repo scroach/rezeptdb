@@ -10,10 +10,6 @@ services:
 before_script:
   - composer install
   - composer require php-coveralls/php-coveralls
-  - rm .env
-  - echo 'DATABASE_URL=mysql://root:@127.0.0.1:3306/rezeptdb' >> .env
-  - echo 'APP_ENV=test' >> .env
-  - cat .env
   - php bin/console doctrine:database:create
   - cp phpunit.xml.dist phpunit.xml
   - php bin/console doctrine:migrations:migrate --no-interaction
