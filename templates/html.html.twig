@@ -24,10 +24,73 @@
 </head>
 <body>
 
+<div class="ui vertical inverted sidebar menu left">
+	<a class="item" href="{{ path('recipeIndex') }}"><i class="home icon"></i> Startseite</a>
+	<a class="item" href="{{ path('addRecipe') }}"><i class="plus icon"></i> Rezept hinzufügen</a>
+	<a class="item" href="{{ path('listRecipeTags') }}"><i class="tag icon"></i> Tags</a>
+	<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i>
+		Zutatensuche</a>
+	<div class="right menu">
+		<div class="ui right aligned category search item">
+			<div class="ui icon input">
+				<input class="prompt" placeholder="Suchen..." type="text" name="search">
+				<i class="search link icon"></i>
+			</div>
+		</div>
+		<a class="item" href="{{ path('logout') }}"><i class="times circle outline icon"></i> Logout</a>
+	</div>
+</div>
+<div class="pusher">
+	<div class="ui black launch right attached fixed button grid" id="toggle-sidebar-button">
+		<i class="content icon"></i>
+	</div>
 
-{% block body %}{% endblock %}
+	<!-- Site content !-->
+	{% block body %}{% endblock %}
+</div>
+
 
 {% block javascripts %}{% endblock %}
+
+<script type="text/javascript">
+	$(function () {
+		$('#toggle-sidebar-button').click(function () {
+			$('.ui.sidebar').sidebar('toggle');
+		});
+	});
+</script>
+
+<style type="text/css">
+	#toggle-sidebar-button {
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 1em;
+		padding: 0.5em 0.2em 0.5em 0.5em;
+	}
+
+	@media only screen and (max-width: 767px) {
+		.ui.vertical.sidebar,
+		#toggle-sidebar-button {
+			display: initial;
+		}
+
+		#main-menu {
+			display: none;
+		}
+	}
+
+	@media only screen and (min-width: 768px) {
+		.ui.vertical.sidebar,
+		#toggle-sidebar-button {
+			display: none;
+		}
+
+		#main-menu {
+			display: initial;
+		}
+	}
+</style>
 
 </body>
 </html>

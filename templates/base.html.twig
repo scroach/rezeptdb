@@ -1,7 +1,7 @@
 {% extends 'html.html.twig' %}
 
 {% block body %}
-	<div class="ui container">
+	<div class="ui container" id="main-container">
 		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 			{{ include('navigation.html.twig') }}
 		{% endif %}
@@ -38,7 +38,7 @@
 			padding: 2em 0em;
 		}
 
-		body {
+		#main-container {
 			padding: 1em;
 		}
 

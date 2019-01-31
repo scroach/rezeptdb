@@ -29,34 +29,42 @@
 	<script type="text/javascript">
 		$(function () {
 			var allRecipesLoaded = false;
-			$('.all-recipes').visibility({
+			var loading = false;
+			$('.all-recipes .cards').visibility({
 				once: false,
-				// update size when new content loads
+				continuous: true,
 				observeChanges: true,
-				// load content on bottom edge visible
-				onBottomVisible: function () {
-					if (!allRecipesLoaded) {
-						loadMoreRecipes();
-					}
-				}
+				//try to load new recipes when reaching 80% of the page's height - but at the latest when reaching rock bottom
+				onPassed: {
+					'80%': loadMoreRecipes
+				},
+				onBottomVisible: loadMoreRecipes,
 			});
 
 			function loadMoreRecipes() {
+				if (loading || allRecipesLoaded)
+					return;
+
+				loading = true;
 				$('.all-recipes .loader').addClass('active');
 				var excludeIds = [];
 				$('.card').each(function (i, item) {
 					excludeIds.push($(item).data('recipe-id'));
 				});
 
-				$.get("{{ path('loadMoreRecipes') }}", {excludeIds: excludeIds}, function (data) {
-					if (typeof  data === 'object') {
-						$('.all-recipes').append('<div class="ui info message">' + data.message + '</div>');
-						allRecipesLoaded = true;
-					} else {
-						$('.all-recipes .cards').append(data);
-					}
-					$('.all-recipes .loader').removeClass('active');
-				});
+				$.get("{{ path('loadMoreRecipes') }}", {excludeIds: excludeIds})
+					.done(function (data) {
+						if (typeof  data === 'object') {
+							$('.all-recipes').append('<div class="ui info message">' + data.message + '</div>');
+							allRecipesLoaded = true;
+						} else {
+							$('.all-recipes .cards').append(data);
+						}
+						$('.all-recipes .loader').removeClass('active');
+					})
+					.always(function () {
+						loading = false;
+					});
 			}
 		});
 	</script>
