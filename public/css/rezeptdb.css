@@ -65,18 +65,9 @@ form .ui.button {
     margin-top: 10px;
 }
 
-/* mobile nav */
-#toggle-sidebar-button {
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 1em;
-    padding: 0.5em 0.2em 0.5em 0.5em;
-}
-
 @media only screen and (max-width: 767px) {
     .ui.vertical.sidebar,
-    #toggle-sidebar-button {
+    #mobile-search-bar {
         display: initial;
     }
 
@@ -87,7 +78,7 @@ form .ui.button {
 
 @media only screen and (min-width: 768px) {
     .ui.vertical.sidebar,
-    #toggle-sidebar-button {
+    #mobile-search-bar {
         display: none;
     }
 

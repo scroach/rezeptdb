@@ -32,19 +32,10 @@
 	<a class="item" href="{{ path('searchByIngredients') }}"><i class="search icon"></i>
 		Zutatensuche</a>
 	<div class="right menu">
-		<div class="ui right aligned category search item">
-			<div class="ui icon input">
-				<input class="prompt" placeholder="Suchen..." type="text" name="search">
-				<i class="search link icon"></i>
-			</div>
-		</div>
 		<a class="item" href="{{ path('logout') }}"><i class="times circle outline icon"></i> Logout</a>
 	</div>
 </div>
 <div class="pusher">
-	<div class="ui black launch right attached fixed button grid" id="toggle-sidebar-button">
-		<i class="content icon"></i>
-	</div>
 
 	<!-- Site content !-->
 	{% block body %}{% endblock %}
