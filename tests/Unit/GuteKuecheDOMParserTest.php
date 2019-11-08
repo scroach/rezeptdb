@@ -26,9 +26,7 @@ class GuteKuecheDOMParserTest extends TestCase {
 		$parser = new GuteKuecheDOMParser();
 		$result = $parser->analyzeUrl('https://www.gutekueche.at/grundrezept-pizzateig-rezept-2589');
 
-		self::assertContains('https://www.gutekueche.at//img/rezept/2589/grundrezept-pizzateig.jpg', $result['images']);
-		self::assertContains('https://www.gutekueche.at//img/rezept/2589/grundrezept-pizzateig_1485461275.jpg', $result['images']);
-		self::assertContains('https://www.gutekueche.at//img/rezept/2589/grundrezept-pizzateig_1496135687.jpg', $result['images']);
+		self::assertContains('https://www.gutekueche.at/img/rezept/2589/grundrezept-pizzateig.jpg', $result['images']);
 
 		$ingredients = [
 			["amount" => "1 Wf", "label" => "Hefe (oder Trockenhefe)"],

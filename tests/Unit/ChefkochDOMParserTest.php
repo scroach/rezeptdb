@@ -29,9 +29,8 @@ class ChefkochDOMParserTest extends TestCase {
 		$parser = new ChefkochDOMParser();
 		$result = $parser->analyzeUrl('https://www.chefkoch.de/rezepte/1112191217260468/Nudelteig.html');
 
-		self::assertContains('https://static.chefkoch-cdn.de/ck.de/rezepte/111/111219/268178-960x720-nudelteig.jpg', $result['images']);
-		self::assertContains('https://static.chefkoch-cdn.de/ck.de/rezepte/111/111219/279051-960x720-nudelteig.jpg', $result['images']);
-		self::assertContains('https://static.chefkoch-cdn.de/ck.de/rezepte/111/111219/238889-960x720-nudelteig.jpg', $result['images']);
+		self::assertContains('https://img.chefkoch-cdn.de/rezepte/1112191217260468/bilder/1111452/crop-960x640/nudelteig.jpg', $result['images']);
+		self::assertContains('https://img.chefkoch-cdn.de/rezepte/1112191217260468/bilder/268178/crop-960x640/nudelteig.jpg', $result['images']);
 
 		$ingredients = [
 			["amount" => "4", "label" => "Eigelb"],

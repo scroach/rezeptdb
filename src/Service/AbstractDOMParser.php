@@ -4,6 +4,8 @@
 namespace App\Service;
 
 
+use Symfony\Component\DomCrawler\Crawler;
+
 abstract class AbstractDOMParser {
 
 	public function analyzeUrl($url) {
@@ -24,21 +26,20 @@ abstract class AbstractDOMParser {
 		];
 	}
 
-	private function fetchDOM($url): \DOMDocument {
-		$doc = new \DOMDocument();
-		$doc->loadHTML(file_get_contents($url));
-		return $doc;
+	private function fetchDOM($url): Crawler {
+		return new Crawler(file_get_contents($url));
+
 	}
 
-	protected abstract function fetchImages(\DOMDocument $doc): array;
+	protected abstract function fetchImages(Crawler $doc): array;
 
-	protected abstract function fetchTitle(\DOMDocument $doc): string;
+	protected abstract function fetchTitle(Crawler $doc): string;
 
-	protected abstract function fetchIngredients(\DOMDocument $doc): array;
+	protected abstract function fetchIngredients(Crawler $doc): array;
 
-	protected abstract function fetchDescription(\DOMDocument $doc): string;
+	protected abstract function fetchDescription(Crawler $doc): string;
 
-	protected abstract function fetchEffort(\DOMDocument $doc): int;
+	protected abstract function fetchEffort(Crawler $doc): int;
 
 	public abstract function isApplicableForUrl(string $url): bool;
 
@@ -62,11 +63,15 @@ abstract class AbstractDOMParser {
 	 * @return null|string|string[]
 	 */
 	public static function trim($string) {
-		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
+		$string =  preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
+		$string =  preg_replace('/^[\s]+|[\s]+$/u', '', $string);
+		return $string;
 	}
 
 	public static function convertWhitespace($string) {
-		return preg_replace('/[\pZ\pC]/u',' ',$string);
+		$string = preg_replace('/[\pZ\pC]+/u',' ',$string);
+		$string = preg_replace('/[\s]+/u',' ',$string);
+		return $string;
 	}
 
 	public static function convertWhitespaceTrim($string) {

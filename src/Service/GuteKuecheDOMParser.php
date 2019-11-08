@@ -3,68 +3,47 @@
 
 namespace App\Service;
 
+use Symfony\Component\DomCrawler\Crawler;
+
 class GuteKuecheDOMParser extends AbstractDOMParser {
 
 	public function isApplicableForUrl(string $url): bool {
 		return preg_match('/^(https?\:)?(\/\/)?(www\.)?gutekueche\.at/', $url);
 	}
 
-	protected function fetchImages(\DOMDocument $doc): array {
-		preg_match('/var imgs = (.*)/', $doc->saveXML(), $matches);
-		$images = $matches[1];
-		if (substr($images, -1) === ',') {
-			$images = substr($images, 0, -1);
-		}
-
-		$imageArray = json_decode($images);
-		foreach ($imageArray as &$image) {
-			$image = 'https://www.gutekueche.at/'.$image;
-		}
-		return $imageArray;
-	}
-
-	protected function fetchDescription(\DOMDocument $doc): string {
-		try {
-			$descriptionXPath = '//section[@itemprop="recipeInstructions"]/ol/li';
-			$xpath = new \DOMXPath($doc);
-			$description = '';
-			foreach ($xpath->query($descriptionXPath) as $descriptionParagraph) {
-				$description .= $descriptionParagraph->nodeValue."\r\n";
-			}
-			return $description;
-		} catch (\Throwable $e) {
-			return 'error trying to parse description: '.$e->getMessage();
-		}
-	}
-
-	protected function fetchIngredients(\DOMDocument $doc): array {
-		$ingredients = [];
-
-		/** @var $ingredient \DOMElement */
-		foreach ($doc->getElementsByTagName('tr') as $ingredient) {
-			if (strpos($ingredient->getAttribute('itemprop'), 'ingredients') !== false) {
-				$ingredients[] = [
-					'amount' => trim($ingredient->getElementsByTagName('td')->item(0)->nodeValue).' '.
-						trim($ingredient->getElementsByTagName('th')->item(0)->nodeValue),
-					'label' => trim($ingredient->getElementsByTagName('th')->item(1)->nodeValue)
-				];
+	protected function fetchImages(Crawler $doc): array {
+		$images = $doc->filter('header img')->extract(['src']);
+		foreach ($images as &$image) {
+			if(substr($image, 0, 4) === '/img') {
+				$image = 'https://www.gutekueche.at'.$image;
 			}
 		}
+		return $images;
+	}
+
+	protected function fetchDescription(Crawler $doc): string {
+		return $doc->filter('.rezept-preperation')->text();
+	}
+
+	protected function fetchIngredients(Crawler $doc): array {
+		$ingredients = $doc->filter('.recipe-ingredients table tr')->each(function (Crawler $element, $i) {
+			return [
+				'amount' => self::convertWhitespaceTrim(
+					$element->filter('td')->text().' '.
+					$element->filter('th')->first()->text()
+				),
+				'label' => self::convertWhitespaceTrim($element->filter('th')->last()->text()),
+			];
+		});
+
 		return $ingredients;
 	}
 
-	protected function fetchTitle(\DOMDocument $doc): string {
-		/** @var $image \DOMElement */
-		foreach ($doc->getElementsByTagName('h1') as $heading) {
-			if (strpos($heading->getAttribute('itemprop'), 'name') !== false) {
-				return $heading->nodeValue;
-			}
-		}
-
-		return '';
+	protected function fetchTitle(Crawler $doc): string {
+		return $doc->filter('article h1')->text();
 	}
 
-    protected function fetchEffort(\DOMDocument $doc): int {
+    protected function fetchEffort(Crawler $doc): int {
         return 1;
     }
 
