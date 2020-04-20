@@ -43,8 +43,8 @@ class ChefkochDOMParserTest extends TestCase {
 		self::assertEquals('Nudelteig', $result['title']);
 		self::assertEquals($ingredients, $result['ingredients']);
 
-		self::assertContains('Für einen Nudelteig rechnet man pro Person ein Eigelb', $result['description']);
-		self::assertContains('Den Teig zur Weiterarbeitung nun auf eine bemehlte Arbeitsfläche geben und den Teigball ', $result['description']);
+		self::assertStringContainsString('Für einen Nudelteig rechnet man pro Person ein Eigelb', $result['description']);
+		self::assertStringContainsString('Den Teig zur Weiterarbeitung nun auf eine bemehlte Arbeitsfläche geben und den Teigball ', $result['description']);
 		libxml_clear_errors();
 	}
 

@@ -41,9 +41,9 @@ class IchKocheDOMParserTest extends TestCase {
 		self::assertEquals('Bananen-Tiramisu', $result['title']);
 		self::assertEquals($ingredients, $result['ingredients']);
 
-		self::assertContains('Bananen in Scheiben schneiden.', $result['description']);
-		self::assertContains('Feinkristallzucker und Vanillezucker mit Mascarpone verrühren', $result['description']);
-		self::assertContains('Mit der restlichen Mascarponecreme abschließen. Zum Schluss mit etwas Kakaopulver bestreuen', $result['description']);
+		self::assertStringContainsString('Bananen in Scheiben schneiden.', $result['description']);
+		self::assertStringContainsString('Feinkristallzucker und Vanillezucker mit Mascarpone verrühren', $result['description']);
+		self::assertStringContainsString('Mit der restlichen Mascarponecreme abschließen. Zum Schluss mit etwas Kakaopulver bestreuen', $result['description']);
 		libxml_clear_errors();
 	}
 

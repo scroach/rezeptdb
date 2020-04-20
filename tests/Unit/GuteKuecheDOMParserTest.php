@@ -40,8 +40,8 @@ class GuteKuecheDOMParserTest extends TestCase {
 		self::assertEquals('Grundrezept Pizzateig', $result['title']);
 		self::assertEquals($ingredients, $result['ingredients']);
 
-		self::assertContains('Das Wasser (hier kann man auch noch einen Schuss Milch hinzufügen', $result['description']);
-		self::assertContains('Den fertigen Teig zudecken (mit einem Küchentuch) und für', $result['description']);
+		self::assertStringContainsString('Das Wasser (hier kann man auch noch einen Schuss Milch hinzufügen', $result['description']);
+		self::assertStringContainsString('Den fertigen Teig zudecken (mit einem Küchentuch) und für', $result['description']);
 		libxml_clear_errors();
 	}
 

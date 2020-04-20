@@ -2,8 +2,12 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class AbstractWebTestCase extends WebTestCase
 {
@@ -13,12 +17,12 @@ class AbstractWebTestCase extends WebTestCase
     /** @var Client */
     public $clientAnon;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->client = static::createClient(array(), array(
+        $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'testuser',
             'PHP_AUTH_PW' => 'supersecurepassword!',
-        ));
+		]);
         $this->client->catchExceptions(false);
 
         $this->clientAnon = static::createClient();
