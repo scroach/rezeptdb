@@ -92,6 +92,8 @@ class Recipe {
 		$this->tags = new ArrayCollection();
 		$this->ingredientGroups = new ArrayCollection();
 		$this->images = new ArrayCollection();
+		$this->created = new \DateTime();
+		$this->modified = new \DateTime();
 	}
 
     public function getId() {

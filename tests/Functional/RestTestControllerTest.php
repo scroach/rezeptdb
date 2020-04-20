@@ -5,8 +5,13 @@ namespace App\Tests\Functional;
 class RestTestControllerTest extends AbstractWebTestCase
 {
 
-    public function testGetTest()
+	private \Symfony\Bundle\FrameworkBundle\KernelBrowser $clientAnon;
+
+	public function testGetTest()
     {
+    	self::ensureKernelShutdown();
+		$this->clientAnon = static::createClient();
+		$this->clientAnon->catchExceptions(false);
         $this->clientAnon->request('GET', '/api/test');
         $this->assertEquals(200, $this->clientAnon->getResponse()->getStatusCode());
 

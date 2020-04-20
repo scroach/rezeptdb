@@ -8,13 +8,13 @@ use App\Entity\ChangePassword;
 use App\Entity\User;
 use App\Form\Type\ChangePasswordType;
 use App\Form\Type\EditProfileType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserController extends Controller {
+class UserController extends AbstractController {
 
 	/**
 	 * @Route("/users/editProfile", name="editProfile")

@@ -12,7 +12,7 @@ use App\Service\ChefkochDOMParser;
 use App\Service\GenericWordpressDOMParser;
 use App\Service\GuteKuecheDOMParser;
 use App\Service\IchKocheDOMParser;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RecipeController extends Controller {
+class RecipeController extends AbstractController {
 
 	/**
 	 * @var AbstractDOMParser[]

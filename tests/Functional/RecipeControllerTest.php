@@ -29,7 +29,6 @@ class RecipeControllerTest extends AbstractWebTestCase
 
         $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 10)));
         self::assertEquals(20, $crawler->filter('.ui.card')->count());
-        echo $this->client->getResponse()->getContent();
         self::assertEquals(11, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
 
         $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 100)));

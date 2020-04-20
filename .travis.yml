@@ -9,7 +9,7 @@ services:
 
 before_script:
   - composer install
-  - composer require php-coveralls/php-coveralls
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer require php-coveralls/php-coveralls
   - php bin/console doctrine:database:create
   - cp phpunit.xml.dist phpunit.xml
   - php bin/console doctrine:migrations:migrate --no-interaction

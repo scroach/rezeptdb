@@ -18,7 +18,8 @@ class ChangePassword {
 	/**
 	 * @Assert\Length(
 	 *     min = 6,
-	 *     minMessage = "Dein neues Passwort muss mindestens 6 Zeichen lang sein!"
+	 *     minMessage = "Dein neues Passwort muss mindestens 6 Zeichen lang sein!",
+	 *     allowEmptyString=true
 	 * )
 	 */
 	protected $newPassword;
