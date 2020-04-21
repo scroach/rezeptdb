@@ -67,7 +67,7 @@
 						min</span>
 					<h2>Beschreibung</h2>
 					{% for para in recipe.descriptionParagraphs %}
-						<p>{{ para }}</p>
+						<p>{{ para|parsedown|raw }}</p>
 					{% endfor %}
 
 					<p>

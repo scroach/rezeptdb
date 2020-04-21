@@ -10,6 +10,14 @@ $(function () {
 	let $formTagsString = $('#form_tagsString');
 	let $ingredientList = $('.ingredientList');
 
+	// init simple markdown editor for description
+	new SimpleMDE({
+		element: $("#form_description")[0],
+		spellChecker: false,
+		status: false,
+		toolbar: ["bold", "italic", "|", "heading-1", "heading-2", "heading-3", "|", "unordered-list", "ordered-list", "|", "link", "image", "|", "guide"],
+	});
+
 	$urlInput.on('paste', function () {
 		setTimeout(fetchRecipeDataFromUrl, 0);
 	});
