@@ -1,6 +1,6 @@
 
-![Travis (.org)](https://img.shields.io/travis/scroach/rezeptdb.svg)
-[![Coverage Status](https://coveralls.io/repos/github/scroach/rezeptdb/badge.svg)](https://coveralls.io/github/scroach/rezeptdb)
+[![Travis (.org)](https://img.shields.io/travis/scroach/rezeptdb?style=for-the-badge)](https://travis-ci.org/github/scroach/rezeptdb)
+[![Coveralls github](https://img.shields.io/coveralls/github/scroach/rezeptdb?style=for-the-badge)](https://coveralls.io/github/scroach/rezeptdb)
 
 # How to install
 
