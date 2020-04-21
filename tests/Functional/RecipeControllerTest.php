@@ -87,7 +87,7 @@ class RecipeControllerTest extends AbstractWebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertSuccessMessage('Rezept erfolgreich gespeichert!');
 
-        self::assertEquals(['Unicorn', 'Pink'],$crawler->filter('.header')->siblings()->filter('.label')->extract(['_text']));
+        self::assertEquals(['Unicorn', 'Pink'],$crawler->filter('h1')->siblings()->filter('.label')->extract(['_text']));
     }
 
     public function testSearch()
