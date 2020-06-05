@@ -11,7 +11,7 @@ class GuteKuecheDOMParser extends AbstractDOMParser {
 		return preg_match('/^(https?\:)?(\/\/)?(www\.)?gutekueche\.at/', $url);
 	}
 
-	protected function fetchImages(Crawler $doc): array {
+	protected function fetchImages(Crawler $doc, string $url): array {
 		$images = $doc->filter('header img')->extract(['src']);
 		foreach ($images as &$image) {
 			if(substr($image, 0, 4) === '/img') {

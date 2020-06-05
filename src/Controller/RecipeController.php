@@ -9,7 +9,7 @@ use App\Entity\Tag;
 use App\Form\Type\IngredientGroupType;
 use App\Service\AbstractDOMParser;
 use App\Service\ChefkochDOMParser;
-use App\Service\GenericWordpressDOMParser;
+use App\Service\GenericDOMParser;
 use App\Service\GuteKuecheDOMParser;
 use App\Service\IchKocheDOMParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +38,7 @@ class RecipeController extends AbstractController {
 			new ChefkochDOMParser(),
 			new IchKocheDOMParser(),
 			new GuteKuecheDOMParser(),
-			new GenericWordpressDOMParser(),
+			new GenericDOMParser(),
 		];
 	}
 

@@ -11,7 +11,7 @@ abstract class AbstractDOMParser {
 	public function analyzeUrl($url) {
 		$doc = $this->fetchDOM($url);
 
-		$images = $this->fixImageUrls($this->fetchImages($doc));
+		$images = $this->fixImageUrls($this->fetchImages($doc, $url), $url);
 		$ingredients = $this->fetchIngredients($doc);
 		$description = $this->fetchDescription($doc);
 		$title = $this->fetchTitle($doc);
@@ -31,7 +31,7 @@ abstract class AbstractDOMParser {
 
 	}
 
-	protected abstract function fetchImages(Crawler $doc): array;
+	protected abstract function fetchImages(Crawler $doc, string $url): array;
 
 	protected abstract function fetchTitle(Crawler $doc): string;
 
@@ -46,12 +46,18 @@ abstract class AbstractDOMParser {
 	/**
 	 * Prepend https: if URL starts with // which causes errors when trying to fetch remote image
 	 * @param String[] $imageUrls
+	 * @param string $baseUrl
 	 * @return array
 	 */
-	private function fixImageUrls($imageUrls) {
+	public function fixImageUrls(array $imageUrls, string $baseUrl) {
+		$parsedBaseUrl = parse_url($baseUrl);
+
 		foreach ($imageUrls as &$imageUrl) {
 			if (strpos($imageUrl, '//') === 0) {
 				$imageUrl = 'https:'.$imageUrl;
+			}
+			if (strpos($imageUrl, '/') === 0) {
+				$imageUrl = $parsedBaseUrl['scheme'].'://'.$parsedBaseUrl['host'].$imageUrl;
 			}
 		}
 		return $imageUrls;

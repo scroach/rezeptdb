@@ -46,7 +46,7 @@ $(function () {
 
 				let input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
 				let toggleIcon = '<i class="white check circle icon">';
-				$('.rec-images.grid').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
+				$('.remote-images').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
 			});
 
 			$urlInput.closest('.input').removeClass('loading');

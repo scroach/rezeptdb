@@ -11,7 +11,7 @@ class IchKocheDOMParser extends AbstractDOMParser {
 		return preg_match('/^(https?\:)?(\/\/)?(www\.)?ichkoche\.at/', $url);
 	}
 
-	protected function fetchImages(Crawler $doc): array {
+	protected function fetchImages(Crawler $doc, string $url): array {
 		$images = $doc->filter('.gallery_slider.recipe img')->extract('src');
 
 		return $images;
