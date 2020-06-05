@@ -16,6 +16,7 @@ $(function () {
 		spellChecker: false,
 		status: false,
 		toolbar: ["bold", "italic", "|", "heading-1", "heading-2", "heading-3", "|", "unordered-list", "ordered-list", "|", "link", "image", "|", "guide"],
+		forceSync: true
 	});
 
 	$urlInput.on('paste', function () {

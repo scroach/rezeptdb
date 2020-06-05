@@ -202,7 +202,9 @@ class RecipeController extends AbstractController {
 	private function formAction(Request $request, Recipe $recipe) {
 		$formBuilder = $this->createFormBuilder($recipe)
 			->add('label', TextType::class, ['label' => 'Titel', 'attr' => ['placeholder' => 'Supersaftige Rippchen']])
-			->add('description', TextareaType::class)
+			->add('description', TextareaType::class, [
+				'required' => false
+			])
 			->add('originUrl', UrlType::class)
 			->add('tagsString', TextType::class)
 			->add('effort', TextType::class, ['label' => 'Aufwand', 'attr' => ['placeholder' => '20 Minuten']])
