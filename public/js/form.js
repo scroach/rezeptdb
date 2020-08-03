@@ -28,29 +28,36 @@ $(function () {
 		/**
 		 * @param {{effort:string, title:string, description:string, ingredients:array, images:array}} response
 		 */
-		$.get(fetchUrl, {url: $urlInput.val()}, function (response) {
-			console.info(response);
-			$('#form_label').val(response.title);
-			$('#form_effort').val(response.effort);
-			descriptionMDE.value(response.description);
+		$.get(fetchUrl, {url: $urlInput.val()})
+			.then(function (response) {
+				$('#form_label').val(response.title);
+				$('#form_effort').val(response.effort);
+				descriptionMDE.value(response.description);
 
-			clearIngredients();
-			response.ingredients.forEach(function (ingredient) {
-				addIngredient($('.ingredientList:first'), ingredient.amount + ' ' + ingredient.label);
-			});
-
-			response.images.forEach(function (imgUrl) {
-				if (!imgUrl) {
-					return;
+				if(response.ingredients && response.ingredients.length > 0) {
+					clearIngredients();
+					response.ingredients.forEach(function (ingredient) {
+						addIngredient($('.ingredientList:first'), ingredient.amount + ' ' + ingredient.label);
+					});
 				}
 
-				let input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
-				let toggleIcon = '<i class="white check circle icon">';
-				$('.remote-images').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
-			});
+				response.images.forEach(function (imgUrl) {
+					if (!imgUrl) {
+						return;
+					}
 
-			$urlInput.closest('.input').removeClass('loading');
-		});
+					let input = '<input type="hidden" name="images[]" value="' + imgUrl + '" disabled>';
+					let toggleIcon = '<i class="white check circle icon">';
+					$('.remote-images').append('<div class="column"><img src="' + imgUrl + '" />' + input + toggleIcon + '</div>');
+				});
+
+			})
+			.fail(function () {
+				alert('Bei der Abfrage ist leider ein Fehler aufgetreten!');
+			})
+			.always(function () {
+				$urlInput.closest('.input').removeClass('loading');
+			});
 	}
 
 	$formTagsString.selectize({
@@ -140,7 +147,6 @@ $(function () {
 	}
 
 	$body.on('keydown', '.ingredients input', function () {
-		console.info($(this).closest('.ingredient'));
 		if ($(this).closest('.ingredient').is(':last-child')) {
 			addIngredient($(this).closest('.ingredientList'));
 		}
@@ -170,7 +176,6 @@ $(function () {
 	});
 
 	new Sortable(document.getElementsByClassName('ingredientGroupList')[0], {
-		// sort: true,
 		handle: ".ingredientGroupDragHandle",
 		animation: 150,
 		draggable: ".ingredientgroup",
@@ -182,7 +187,6 @@ $(function () {
 	 */
 	function resetIngredientIds() {
 		$('.ingredientgroup').each(function (groupIndex, groupElement) {
-			console.info('replacing group:', groupElement);
 			let groupPrefix = 'form[ingredientGroups][' + groupIndex + ']';
 			$(groupElement).find('input[name^="form[ingredientGroups]"]').each(function (inputIndex, input) {
 				let newName = $(input).attr('name').replace(/form\[ingredientGroups]\[\d+]/, groupPrefix);
@@ -191,7 +195,6 @@ $(function () {
 
 			$(groupElement).find('input[name*="[ingredients]"]').each(function (ingredientIndex, input) {
 				let newName = $(input).attr('name').replace(/\[ingredients]\[\d+]/, '[ingredients][' + ingredientIndex + ']');
-				console.info('replacing ingredient:', ingredientIndex, newName);
 				$(input).attr('name', newName);
 			});
 		});

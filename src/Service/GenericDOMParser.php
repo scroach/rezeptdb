@@ -62,6 +62,10 @@ class GenericDOMParser extends AbstractDOMParser {
 	}
 
 	private function filterImages($imgUrl) {
+		if(!$imgUrl) {
+			return false;
+		}
+
 		$imgSize = getimagesize($imgUrl);
 		$width = $imgSize[0];
 		$height = $imgSize[1];

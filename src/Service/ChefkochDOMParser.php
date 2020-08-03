@@ -17,9 +17,9 @@ class ChefkochDOMParser extends AbstractDOMParser {
 
 	protected function fetchDescription(Crawler $doc): string {
 		try {
-			$description = $doc->filter('article .ds-box')->extract('_text');
+			$description = $doc->filter('article .ds-box:not(.recipe-author)')->extract('_text');
 			$description = implode("\r\n", $description);
-			return self::convertWhitespaceTrim($description);
+			return $description;
 		} catch (\Throwable $e) {
 			return 'error trying to parse description';
 		}
