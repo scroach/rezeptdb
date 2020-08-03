@@ -11,7 +11,7 @@ $(function () {
 	let $ingredientList = $('.ingredientList');
 
 	// init simple markdown editor for description
-	new SimpleMDE({
+	let descriptionMDE = new SimpleMDE({
 		element: $("#form_description")[0],
 		spellChecker: false,
 		status: false,
@@ -31,8 +31,8 @@ $(function () {
 		$.get(fetchUrl, {url: $urlInput.val()}, function (response) {
 			console.info(response);
 			$('#form_label').val(response.title);
-			$('#form_description').val(response.description);
 			$('#form_effort').val(response.effort);
+			descriptionMDE.value(response.description);
 
 			clearIngredients();
 			response.ingredients.forEach(function (ingredient) {
