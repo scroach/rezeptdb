@@ -18,7 +18,7 @@ class RestRecipeController extends FOSRestController
         $recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex();
         $recipeDTOs = array();
         foreach ($recipes as $recipe) {
-            array_push($recipeDTOs, new RecipeDTO($recipe));
+            array_push($recipeDTOs, RecipeDTO::createFromRecipe($recipe));
         }
         //return View::create(sizeof($recipeDTOs), Response::HTTP_OK , []);
         return View::create($recipeDTOs, Response::HTTP_OK , []);

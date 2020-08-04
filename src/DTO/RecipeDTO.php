@@ -6,37 +6,39 @@ use App\Entity\Recipe;
 
 class RecipeDTO
 {
-    /** @var string */
-    public $label;
+	public ?string $label;
 
-    /** @var int */
-    public $effort;
+    public ?int $effort;
 
-    /** @var string */
-    public $description;
+    public ?string $description;
 
     /** @var string[] */
-    public $tags = array();
+    public array $tags = [];
 
     /** @var IngredientGroupDTO[] */
-    public $ingredientGroups = array();
+    public array $ingredientGroups = [];
 
-    /** @var string */
-    public $image;
+    /** @var string[] */
+    public array $images = [];
 
-    function __construct(Recipe $recipe) {
-        $this->label = $recipe->getLabel();
-        $this->effort = $recipe->getEffort();
-        $this->description = $recipe->getDescription();
-        foreach ($recipe->getTags() as $tag) {
-            array_push($this->tags, $tag->getLabel());
-        }
-        foreach ($recipe->getIngredientGroups() as $ingredientGroup) {
-            array_push($this->ingredientGroups, new IngredientGroupDTO($ingredientGroup));
-        }
-        if ($recipe->getImages()->count() > 0) {
-           $this->image = $recipe->getImages()->get(0)->getUrl();
-        }
+    function __construct() {
+    }
+
+	public static function createFromRecipe(Recipe $recipe): self {
+    	$recipeDto = new self();
+		$recipeDto->label = $recipe->getLabel();
+		$recipeDto->effort = $recipe->getEffort();
+		$recipeDto->description = $recipe->getDescription();
+		foreach ($recipe->getTags() as $tag) {
+			array_push($recipeDto->tags, $tag->getLabel());
+		}
+		foreach ($recipe->getIngredientGroups() as $ingredientGroup) {
+			array_push($recipeDto->ingredientGroups, IngredientGroupDTO::createFromIngredientGroup($ingredientGroup));
+		}
+		if ($recipe->getImages()->count() > 0) {
+			$recipeDto->images = $recipe->getImages()->get(0)->getUrl();
+		}
+		return $recipeDto;
     }
 
 }

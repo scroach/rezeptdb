@@ -4,42 +4,20 @@
 namespace App\Service;
 
 
+use App\DTO\RecipeDTO;
 use Symfony\Component\DomCrawler\Crawler;
 
 abstract class AbstractDOMParser {
 
-	public function analyzeUrl($url) {
-		$doc = $this->fetchDOM($url);
+	public abstract function extractRecipe(string $url, ?Crawler $doc = null): ?RecipeDTO;
 
-		$images = $this->fixImageUrls($this->fetchImages($doc, $url), $url);
-		$ingredients = $this->fetchIngredients($doc);
-		$description = $this->fetchDescription($doc);
-		$title = $this->fetchTitle($doc);
-		$effort = $this->fetchEffort($doc);
-
-		return [
-			'images' => $images,
-			'ingredients' => $ingredients,
-			'description' => $description,
-			'title' => $title,
-            'effort' => $effort
-		];
+	protected function fetchDOM($url): Crawler {
+		// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
+		libxml_use_internal_errors(true);
+		$result = new Crawler(file_get_contents($url));
+		libxml_clear_errors();
+		return $result;
 	}
-
-	private function fetchDOM($url): Crawler {
-		return new Crawler(file_get_contents($url));
-
-	}
-
-	protected abstract function fetchImages(Crawler $doc, string $url): array;
-
-	protected abstract function fetchTitle(Crawler $doc): string;
-
-	protected abstract function fetchIngredients(Crawler $doc): array;
-
-	protected abstract function fetchDescription(Crawler $doc): string;
-
-	protected abstract function fetchEffort(Crawler $doc): int;
 
 	public abstract function isApplicableForUrl(string $url): bool;
 
@@ -82,6 +60,53 @@ abstract class AbstractDOMParser {
 
 	public static function convertWhitespaceTrim($string) {
 		return self::trim(self::convertWhitespace($string));
+	}
+
+	protected function extractImagesFromSrcAttribute($doc): array {
+		return $doc->filter('img')->extract('src');
+	}
+
+	protected function extractBackgroundImageUrls($doc): array {
+		$imgUrls = [];
+		$attributes = $doc->filter('*')->extract(['style']);
+		$attributes = array_filter($attributes);
+		foreach ($attributes as $attribute) {
+			$matches = [];
+			$result = preg_match('/background-image:.*url\([\'"](.+)[\'"]\)/i', $attribute, $matches);
+			if ($result) {
+				$imgUrls[] = $matches[1];
+			}
+		}
+		return $imgUrls;
+	}
+
+	protected function fetchImages(Crawler $doc, string $url): array {
+		$imgUrls = [
+			...$this->extractBackgroundImageUrls($doc),
+			...$this->extractImagesFromSrcAttribute($doc),
+		];
+
+		$imgUrls = $this->fixImageUrls($imgUrls, $url);
+		$imgUrls = array_values(array_filter($imgUrls, [$this, 'filterImages']));
+
+		return $imgUrls;
+	}
+
+	protected function filterImages($imgUrl) {
+		if(!$imgUrl) {
+			return false;
+		}
+
+		try {
+			$imgSize = getimagesize($imgUrl);
+			$width = $imgSize[0];
+			$height = $imgSize[1];
+			$imageSizeBigger100Pixels = $width > 100 && $height > 100;
+			$aspectRatioOkay = max($width, $height) / min($width, $height) < 3;
+			return $imageSizeBigger100Pixels && $aspectRatioOkay;
+		} catch (\Throwable $exception) {
+			return false;
+		}
 	}
 
 }

@@ -7,11 +7,7 @@ use App\Entity\Image;
 use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Form\Type\IngredientGroupType;
-use App\Service\AbstractDOMParser;
-use App\Service\ChefkochDOMParser;
-use App\Service\GenericDOMParser;
-use App\Service\GuteKuecheDOMParser;
-use App\Service\IchKocheDOMParser;
+use App\Service\RecipeParserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -27,20 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RecipeController extends AbstractController {
-
-	/**
-	 * @var AbstractDOMParser[]
-	 */
-	private $domParsers = [];
-
-	public function __construct() {
-		$this->domParsers = [
-			new ChefkochDOMParser(),
-			new IchKocheDOMParser(),
-			new GuteKuecheDOMParser(),
-			new GenericDOMParser(),
-		];
-	}
 
 	/**
 	 * @Route("/", name="recipeIndex")
@@ -173,25 +155,8 @@ class RecipeController extends AbstractController {
 	/**
 	 * @Route("/recipes/analyzeUrl", name="parseRecipeUrl")
 	 */
-	public function analyzeUrlAction(Request $request) {
-		$url = $request->query->get('url');
-
-		/** @var AbstractDOMParser $domParser */
-		foreach ($this->domParsers as $domParser) {
-			if ($domParser->isApplicableForUrl($url)) {
-				// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
-				libxml_use_internal_errors(true);
-
-				$result = $domParser->analyzeUrl($url);
-
-				libxml_clear_errors();
-
-				return new JsonResponse($result);
-			}
-		}
-
-		throw new \Exception('couldnt find any dom parser for the provided url');
-
+	public function analyzeUrlAction(Request $request, RecipeParserService $service) {
+		return new JsonResponse($service->analyze($request->query->get('url')));
 	}
 
 	/**

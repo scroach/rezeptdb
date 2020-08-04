@@ -26,18 +26,21 @@ $(function () {
 	function fetchRecipeDataFromUrl() {
 		$urlInput.closest('.input').addClass('loading');
 		/**
-		 * @param {{effort:string, title:string, description:string, ingredients:array, images:array}} response
+		 * @param {{effort:string, label:string, description:string, ingredientGroups:array, images:array}} response
 		 */
 		$.get(fetchUrl, {url: $urlInput.val()})
 			.then(function (response) {
-				$('#form_label').val(response.title);
+				$('#form_label').val(response.label);
 				$('#form_effort').val(response.effort);
 				descriptionMDE.value(response.description);
 
-				if(response.ingredients && response.ingredients.length > 0) {
+				if(response.ingredientGroups && response.ingredientGroups.length > 0) {
 					clearIngredients();
-					response.ingredients.forEach(function (ingredient) {
-						addIngredient($('.ingredientList:first'), ingredient.amount + ' ' + ingredient.label);
+					response.ingredientGroups.forEach(function (ingredientGroup) {
+						addIngredientGroup(ingredientGroup.label, false);
+						ingredientGroup.ingredients.forEach(function (ingredient) {
+							addIngredient($('.ingredientList:last'), ingredient);
+						});
 					});
 				}
 
@@ -106,7 +109,6 @@ $(function () {
 
 	function clearIngredients() {
 		$('.ingredients [data-prototype]').empty();
-		addIngredientGroup(null, false);
 	}
 
 	function addIngredient($list, value) {
