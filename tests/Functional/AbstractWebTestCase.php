@@ -16,11 +16,23 @@ class AbstractWebTestCase extends WebTestCase
 
     public function setUp(): void
     {
-        $this->client = static::createClient([], [
-            'PHP_AUTH_USER' => 'testuser',
-            'PHP_AUTH_PW' => 'supersecurepassword!',
+    	$this->loginRick();
+    }
+
+	public function loginRick() {
+		$this->client = static::createClient([], [
+			'PHP_AUTH_USER' => 'rick',
+			'PHP_AUTH_PW' => 'supersecurepassword!',
 		]);
-        $this->client->catchExceptions(false);
+		$this->client->catchExceptions(false);
+    }
+
+	public function loginMorty() {
+		$this->client = static::createClient([], [
+			'PHP_AUTH_USER' => 'morty',
+			'PHP_AUTH_PW' => 'supersecurepassword!',
+		]);
+		$this->client->catchExceptions(false);
     }
 
     public function assertResponseContains(string $string): void

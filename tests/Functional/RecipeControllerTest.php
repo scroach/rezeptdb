@@ -3,6 +3,7 @@
 namespace App\Tests\Functional;
 
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class RecipeControllerTest extends AbstractWebTestCase
 {
@@ -15,8 +16,16 @@ class RecipeControllerTest extends AbstractWebTestCase
 
     public function testDelete()
     {
+    	$this->loginRick();
         $this->client->request('GET', '/recipes/delete/1');
         self::assertTrue($this->client->getResponse()->isRedirect('/'));
+    }
+
+    public function testDeleteRicksRecipeAsMortyNotAllowed()
+    {
+    	$this->expectException(AccessDeniedException::class);
+    	$this->loginMorty();
+        $this->client->request('GET', '/recipes/delete/1');
     }
 
     public function testLoadMoreRecipes()
@@ -29,9 +38,9 @@ class RecipeControllerTest extends AbstractWebTestCase
 
         $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 10)));
         self::assertEquals(20, $crawler->filter('.ui.card')->count());
-        self::assertEquals(11, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
+        self::assertEquals(101, $crawler->filter('.ui.card')->first()->attr('data-recipe-id'));
 
-        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 100)));
+        $crawler = $this->client->xmlHttpRequest('GET', $url, array('excludeIds' => range(1, 1000)));
         self::assertEquals(0, $crawler->filter('.ui.card')->count());
         self::assertEquals('{"message":"Keine Rezepte mehr :("}', $this->client->getResponse()->getContent());
     }
@@ -92,8 +101,8 @@ class RecipeControllerTest extends AbstractWebTestCase
 
     public function testSearch()
     {
-        $crawler =$this->client->request('GET', '/recipes/search/TestRecipe');
-        self::assertEquals(29, $crawler->filter('.ui.card')->count());
+        $crawler =$this->client->request('GET', '/recipes/search/TestRecipeSearchDescription');
+        self::assertEquals(30, $crawler->filter('.ui.card')->count());
     }
 
     public function testSearchReturnsSingle()

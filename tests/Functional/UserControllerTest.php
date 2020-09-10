@@ -11,8 +11,8 @@ class UserControllerTest extends AbstractWebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         $form = $crawler->selectButton('Speichern')->form();
-        self::assertEquals('test@test.com', $form->getValues()['edit_profile[email]']);
-        self::assertEquals('testuser', $form->getValues()['edit_profile[username]']);
+        self::assertEquals('rick@rick.com', $form->getValues()['edit_profile[email]']);
+        self::assertEquals('rick', $form->getValues()['edit_profile[username]']);
         $form->setValues([
             'edit_profile[email]' => 'invalidmail',
             'edit_profile[username]' => 'changedUsername',
