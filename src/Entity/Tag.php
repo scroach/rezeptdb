@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\TagRepository")
  * @ORM\Table(name="tags")
  */
 class Tag {
@@ -26,6 +26,12 @@ class Tag {
 	 * @ORM\ManyToMany(targetEntity="App\Entity\Recipe", mappedBy="tags"))
 	 */
 	private $recipes;
+
+	/**
+	 * @var User|null
+	 * @ORM\ManyToOne(targetEntity="App\Entity\User")
+	 */
+	private $user;
 
 	public function getId() {
 		return $this->id;
@@ -53,6 +59,14 @@ class Tag {
 	 */
 	public function setRecipes($recipes): void {
 		$this->recipes = $recipes;
+	}
+
+	public function getUser(): ?User {
+		return $this->user;
+	}
+
+	public function setUser(?User $user): void {
+		$this->user = $user;
 	}
 
 }

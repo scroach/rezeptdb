@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Recipe;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,7 +19,7 @@ class RecipeRepository extends ServiceEntityRepository {
 		parent::__construct($registry, Recipe::class);
 	}
 
-	public function search(string $searchString) {
+	public function search(User $user, string $searchString) {
 
 		$matchFulltext = "MATCH_AGAINST(r.label, r.description, r.originUrl, :search 'WTH QUERY EXPANSION') + MATCH_AGAINST(t.label, :search)+MATCH_AGAINST(i.label, :search)";
 		$qb = $this->createQueryBuilder('r');
@@ -28,6 +29,7 @@ class RecipeRepository extends ServiceEntityRepository {
 			->join('ig.ingredients', 'i')
 			->join('r.tags', 't')
 			->where("$matchFulltext> 0")
+			->andWhere('r.user = :user')->setParameter('user', $user)
 			->groupBy('r.id')
 			->orderBy('recipeScore', 'DESC')
 			->setParameter('search', $searchString)
@@ -65,15 +67,20 @@ class RecipeRepository extends ServiceEntityRepository {
 		return $recipes;
 	}
 
-	public function fetchForIndex($excludeIds = []) {
+	public function fetchForIndex(User $user, $excludeIds = [], int $maxResults = 20) {
 		$query = $this->createQueryBuilder('r')->select('r, groups, ingredients')
 			->leftJoin('r.ingredientGroups', 'groups')
 			->leftJoin('groups.ingredients', 'ingredients')
-			->orderBy('r.modified', 'DESC')
-			->setMaxResults(20);
+			->andWhere('r.user = :user')
+			->setParameter('user', $user)
+			->orderBy('r.modified', 'DESC');
+
+		if($maxResults) {
+			$query->setMaxResults(20);
+		}
 
 		if ($excludeIds) {
-			$query->where('r.id NOT IN (:excludedIds)')->setParameter('excludedIds', $excludeIds);
+			$query->andWhere('r.id NOT IN (:excludedIds)')->setParameter('excludedIds', $excludeIds);
 		}
 
 		// use Paginator for joined results - normal joined query with max results wouldn't produce the expected result
@@ -87,6 +94,18 @@ class RecipeRepository extends ServiceEntityRepository {
 		$this->preloadAssociation($recipeIds, 'tags');
 
 		return $recipes;
+	}
+
+	/**
+	 * @param int $amount
+	 * @return Recipe[]
+	 */
+	public function findRandomRecipes(User $user, int $amount = 4) {
+		return $this->createQueryBuilder('r')
+			->andWhere('r.user = :user')->setParameter('user', $user)
+			->orderBy('RAND()')
+			->setMaxResults($amount)
+			->getQuery()->getResult();
 	}
 
 	/**

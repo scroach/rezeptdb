@@ -9,7 +9,7 @@ use App\DTO\RecipeDTO;
 class RecipeParserService {
 
 	/** @var AbstractDOMParser[] */
-	private array $domParsers;
+	private iterable $domParsers;
 
 	public function __construct($domParsers) {
 		$this->domParsers = $domParsers;

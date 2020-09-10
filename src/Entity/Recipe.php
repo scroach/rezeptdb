@@ -72,6 +72,12 @@ class Recipe {
 	private $modified;
 
 	/**
+	 * @var User|null
+	 * @ORM\ManyToOne(targetEntity="App\Entity\User")
+	 */
+	private $user;
+
+	/**
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
 	private $deletedAt;
@@ -299,6 +305,14 @@ class Recipe {
 				}
 			}
 		}
+	}
+
+	public function getUser(): ?User {
+		return $this->user;
+	}
+
+	public function setUser(User $user): void {
+		$this->user = $user;
 	}
 
 }

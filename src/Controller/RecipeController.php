@@ -6,7 +6,11 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Entity\Recipe;
 use App\Entity\Tag;
+use App\Entity\User;
 use App\Form\Type\IngredientGroupType;
+use App\Repository\RecipeRepository;
+use App\Repository\TagRepository;
+use App\Security\Voter\RecipeVoter;
 use App\Service\RecipeParserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -28,8 +32,8 @@ class RecipeController extends AbstractController {
 	 * @Route("/", name="recipeIndex")
 	 */
 	public function indexAction() {
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex();
-		$randomRecipes = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r')->orderBy('RAND()')->setMaxResults(4)->getQuery()->getResult();
+		$recipes = $this->getRecipeRepo()->fetchForIndex($this->getUser());
+		$randomRecipes = $this->getRecipeRepo()->findRandomRecipes($this->getUser());
 		return $this->render('index.html.twig', array(
 			'recipes' => $recipes,
 			'randomRecipes' => $randomRecipes,
@@ -41,7 +45,7 @@ class RecipeController extends AbstractController {
 	 */
 	public function loadMoreRecipesAction(Request $request) {
 		$excludeIds = $request->get('excludeIds');
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex($excludeIds);
+		$recipes = $this->getRecipeRepo()->fetchForIndex($this->getUser(), $excludeIds);
 
 		if (empty($recipes)) {
 			return new JsonResponse(['message' => 'Keine Rezepte mehr :(']);
@@ -62,7 +66,7 @@ class RecipeController extends AbstractController {
 		}
 
 		$searchString = urldecode($searchString);
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->search($searchString);
+		$recipes = $this->getRecipeRepo()->search($this->getUser(), $searchString);
 
 		if (empty($recipes)) {
 			$this->addFlash('warning', sprintf('Ich konnte leider keine Rezepte mit "%s" finden :\'(', $searchString));
@@ -78,7 +82,9 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/add", name="addRecipe")
 	 */
 	public function addAction(Request $request) {
-		return $this->formAction($request, new Recipe());
+		$recipe = new Recipe();
+		$recipe->setUser($this->getUser());
+		return $this->formAction($request, $recipe);
 	}
 
 	/**
@@ -92,7 +98,9 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/show/{id}", name="showRecipe")
 	 */
 	public function showAction(int $id) {
-		return $this->render('details.html.twig', ['recipe' => $this->getRecipeById($id)]);
+		$recipe = $this->getRecipeById($id);
+		$this->denyAccessUnlessGranted(RecipeVoter::READ, $recipe);
+		return $this->render('details.html.twig', ['recipe' => $recipe]);
 	}
 
 	/**
@@ -118,7 +126,8 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/delete/{id}", name="deleteRecipe")
 	 */
 	public function delete($id) {
-		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
+		$recipe = $this->getRecipeRepo()->find($id);
+		$this->denyAccessUnlessGranted(RecipeVoter::EDIT, $recipe);
 		$this->getDoctrine()->getManager()->remove($recipe);
 		$this->getDoctrine()->getManager()->flush();
 		$this->addFlash('success', 'Rezept erfolgreich gelöscht!');
@@ -129,7 +138,7 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/tags", name="listRecipeTags")
 	 */
 	public function listTags() {
-		$tags = $this->getDoctrine()->getRepository(Tag::class)->findAll();
+		$tags = $this->getTagRepo()->findByUser($this->getUser());
 		return $this->render('tags.html.twig', array(
 			'tags' => $tags,
 		));
@@ -139,12 +148,12 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/tags/{tagLabel}", name="recipeByTag")
 	 */
 	public function showByTag($tagLabel) {
-		$tag = $this->getDoctrine()->getRepository(Tag::class)->findOneBy(['label' => $tagLabel]);
+		$tag = $this->getTagRepo()->findOneByLabel($this->getUser(), $tagLabel);
 		if($tag === null) {
             $this->addFlash('error', 'Dieser Tag existiert leider nicht!');
 		    return $this->redirectToRoute('listRecipeTags');
         }
-		$builder = $this->getDoctrine()->getRepository(Recipe::class)->createQueryBuilder('r');
+		$builder = $this->getRecipeRepo()->createQueryBuilder('r');
 		$recipes = $builder->join('r.tags', 't')->where('t = :tag')->setParameter('tag', $tag)->getQuery()->getResult();
 		return $this->render('recipesByTags.html.twig', array(
 			'recipes' => $recipes,
@@ -165,6 +174,8 @@ class RecipeController extends AbstractController {
 	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
 	 */
 	private function formAction(Request $request, Recipe $recipe) {
+		$this->denyAccessUnlessGranted(RecipeVoter::EDIT, $recipe);
+
 		$formBuilder = $this->createFormBuilder($recipe)
 			->add('label', TextType::class, ['label' => 'Titel', 'attr' => ['placeholder' => 'Supersaftige Rippchen']])
 			->add('description', TextareaType::class, [
@@ -222,7 +233,7 @@ class RecipeController extends AbstractController {
 
 		$existingTags = array_map(function (Tag $tag) {
 			return ['value' => $tag->getLabel(), 'text' => $tag->getLabel()];
-		}, $this->getDoctrine()->getManager()->getRepository(Tag::class)->findAll());
+		}, $this->getTagRepo()->findByUser($this->getUser()));
 
 
 		return $this->render('form.html.twig', array(
@@ -272,16 +283,17 @@ class RecipeController extends AbstractController {
 	 */
 	private function processSubmittedTags(Recipe $recipe): void {
 		$tags = $recipe->getTagsString();
-		$tagRepo = $this->getDoctrine()->getManager()->getRepository(Tag::class);
+		$tagRepo = $this->getTagRepo();
 		$recipe->getTags()->clear();
 		foreach (explode(',', $tags) as $tagName) {
 			if (empty($tagName)) {
 				continue;
 			}
 
-			$tag = $tagRepo->findOneBy(['label' => $tagName]);
+			$tag = $tagRepo->findOneByLabel($this->getUser(), $tagName);
 			if (!$tag) {
 				$tag = new Tag();
+				$tag->setUser($this->getUser());
 				$tag->setLabel($tagName);
 				$this->getDoctrine()->getManager()->persist($tag);
 			}
@@ -347,7 +359,7 @@ class RecipeController extends AbstractController {
 				return !empty($ingredient);
 			});
 
-			$recipesDB = $this->getDoctrine()->getRepository(Recipe::class)->findAll();
+			$recipesDB = $this->getRecipeRepo()->fetchForIndex($this->getUser(), [], null);
 			$recipes = [];
 			foreach ($recipesDB as $recipe) {
 				$recipe->setSearchRating($this->rateRecipeByIngriedientsFilter($recipe, $ingredients));
@@ -399,7 +411,7 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/downloadMissingRemoteImages")
 	 */
 	public function downloadMissingRemoteImages() {
-		$recipes = $this->getDoctrine()->getRepository(Recipe::class)->findAll();
+		$recipes = $this->getRecipeRepo()->findAll();
 		foreach ($recipes as $recipe) {
 			foreach ($recipe->getImages() as $image) {
 				if (!$image->getLocalFileName()) {
@@ -414,10 +426,22 @@ class RecipeController extends AbstractController {
 
 	private function getRecipeById(int $id): Recipe {
 		/** @var Recipe|null $recipe */
-		$recipe = $this->getDoctrine()->getRepository(Recipe::class)->find($id);
+		$recipe = $this->getRecipeRepo()->find($id);
 		if (!$recipe) {
 			throw $this->createNotFoundException(sprintf('Rezept mit ID %d existiert nicht ', $id));
 		}
 		return $recipe;
+	}
+
+	private function getRecipeRepo(): RecipeRepository {
+		return $this->getDoctrine()->getRepository(Recipe::class);
+	}
+
+	private function getTagRepo(): TagRepository {
+		return $this->getDoctrine()->getRepository(Tag::class);
+	}
+
+	protected function getUser(): User {
+		return parent::getUser();
 	}
 }

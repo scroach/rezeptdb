@@ -15,7 +15,7 @@ class RestRecipeController extends FOSRestController
      * @FOSRest\Get("/recipes")
      */
     public function getRecipes() {
-        $recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex();
+        $recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex($this->getUser());
         $recipeDTOs = array();
         foreach ($recipes as $recipe) {
             array_push($recipeDTOs, RecipeDTO::createFromRecipe($recipe));
