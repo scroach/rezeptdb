@@ -6,16 +6,16 @@
 		{% endif %}
 
 		<a href="{{ path('showRecipe', {'id': recipe.id}) }}">
-			{% set image = recipe.images | first %}
-			{% if (image) %}
-				{% if image.localFileName %}
-					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(600,600) }}"/>
-				{% else %}
-					<img src="{{ image(image.url).cropResize(600,600) }}"/>
-				{% endif %}
-			{% else %}
+{#			{% set image = recipe.images | first %}#}
+{#			{% if (image) %}#}
+{#				{% if image.localFileName %}#}
+{#					<img src="{{ image(upload_directory~'/'~image.localFileName).cropResize(600,600) }}"/>#}
+{#				{% else %}#}
+{#					<img src="{{ image(image.url).cropResize(600,600) }}"/>#}
+{#				{% endif %}#}
+{#			{% else %}#}
 				<img src="{{ asset('images/noimage.png') }}">
-			{% endif %}
+{#			{% endif %}#}
 		</a>
 	</div>
 	<div class="content">
