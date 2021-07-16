@@ -103,13 +103,17 @@ class JsonLdParser extends AbstractDOMParser {
 	}
 
 	private function extractEffortFromJsonLdData($jsonLdData): ?int {
-		if (isset($jsonLdData['totalTime'])) {
-			$totalTime = new \DateInterval($jsonLdData['totalTime']);
-			return $this->dateIntervalToMinutes($totalTime);
-		} else {
-			$prepTime = new \DateInterval($jsonLdData['prepTime'] ?? '');
-			$cookTime = new \DateInterval($jsonLdData['cookTime'] ?? '');
-			return $this->dateIntervalToMinutes($prepTime) + $this->dateIntervalToMinutes($cookTime);
+		try {
+			if (isset($jsonLdData['totalTime'])) {
+				$totalTime = new \DateInterval($jsonLdData['totalTime']);
+				return $this->dateIntervalToMinutes($totalTime);
+			} else {
+				$prepTime = new \DateInterval($jsonLdData['prepTime'] ?? '');
+				$cookTime = new \DateInterval($jsonLdData['cookTime'] ?? '');
+				return $this->dateIntervalToMinutes($prepTime) + $this->dateIntervalToMinutes($cookTime);
+			}
+		} catch (\Exception $exception) {
+			return null;
 		}
 	}
 
