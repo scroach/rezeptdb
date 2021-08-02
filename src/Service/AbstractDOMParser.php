@@ -46,9 +46,10 @@ abstract class AbstractDOMParser {
 	 * @param $string
 	 * @return null|string|string[]
 	 */
-	public static function trim($string) {
-		$string =  preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
-		$string =  preg_replace('/^[\s]+|[\s]+$/u', '', $string);
+	public static function trimAndRemoveNewline($string) {
+		$string = preg_replace("/[\n\r]/", " ", $string);
+		$string = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $string);
+		$string = preg_replace('/^[\s]+|[\s]+$/u', '', $string);
 		return $string;
 	}
 
@@ -59,7 +60,7 @@ abstract class AbstractDOMParser {
 	}
 
 	public static function convertWhitespaceTrim($string) {
-		return self::trim(self::convertWhitespace($string));
+		return self::trimAndRemoveNewline(self::convertWhitespace($string));
 	}
 
 	protected function extractImagesFromSrcAttribute($doc): array {

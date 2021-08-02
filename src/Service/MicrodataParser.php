@@ -49,7 +49,7 @@ class MicrodataParser extends AbstractDOMParser {
 			...$doc->filter('[itemprop="recipeInstructions"]')->extract(['content']),
 			...$doc->filter('[itemprop="recipeInstructions"]')->extract(['_text']),
 		];
-		return implode("\r\n", array_map(fn(string $desc) => self::trim($desc), array_filter($instructions)));
+		return implode("\r\n", array_map(fn(string $desc) => self::trimAndRemoveNewline($desc), array_filter($instructions)));
 	}
 
 	private function extractTitle(Crawler $doc): ?string {
@@ -69,17 +69,31 @@ class MicrodataParser extends AbstractDOMParser {
 		];
 
 		$ingredientGroup = new IngredientGroupDTO();
-		$ingredientGroup->ingredients = [...array_filter(array_map(fn(string $ingredient) => self::trim($ingredient), $ingredients))];
+		$ingredientGroup->ingredients = [...array_filter(array_map(fn(string $ingredient) => self::trimAndRemoveNewline($ingredient), $ingredients))];
 		return [$ingredientGroup];
 	}
 
 	private function extractEffortFromJsonLdData(Crawler $doc): ?int {
 		$totalTimeNode = $doc->filter('[itemprop="totalTime"]');
 
+		// total time may be in different attributes or the item text
+		$totalTimeAttributes = ['content', '_text'];
+
 		if ($totalTimeNode->count()) {
-			$totalTime = implode('', $totalTimeNode->extract(['content'])) ?? implode('', $totalTimeNode->extract(['_text']));
-			$totalTime = new \DateInterval($totalTime);
-			return $this->dateIntervalToMinutes($totalTime);
+			foreach ($totalTimeAttributes as $attribute) {
+				$totalTime = trim(implode('', $totalTimeNode->extract([$attribute])));
+				if($totalTime) {
+					break;
+				}
+			}
+
+			try {
+				$totalTime = new \DateInterval($totalTime);
+				return $this->dateIntervalToMinutes($totalTime);
+			} catch (\Exception $exception) {
+				// just return zero if the date format cannot be parsed
+				return 0;
+			}
 		} else {
 			return 0;
 		}

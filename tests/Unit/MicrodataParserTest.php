@@ -3,7 +3,6 @@
 namespace App\Tests\Unit;
 
 use App\DTO\IngredientGroupDTO;
-use App\Service\JsonLdParser;
 use App\Service\MicrodataParser;
 use PHPUnit\Framework\TestCase;
 
@@ -54,6 +53,31 @@ class MicrodataParserTest extends TestCase {
             '300 g Weizenmehl (W700, Deutschland: Typ 550)',
             'Zum Bepinseln: 1 Eigelb + 1 EL Milch verquirlt',
             'Außerdem: Öl für die Schüssel, Mehl zum Arbeiten'
+		];
+
+		self::assertEquals([$expectedGroup], $recipe->ingredientGroups);
+	}
+
+	function testGusto() {
+		$recipe = $this->parser->extractRecipe('https://www.gusto.at/rezepte/spanische-erdaepfelkroketten-schinken');
+		self::assertEquals('Spanische Erdäpfelkroketten mit Schinken', $recipe->label);
+		self::assertStringStartsWith('Erdäpfel in Salzwasser kochen, abseihen und ausdampfen lassen. Schinken möglichst klein schneiden', $recipe->description);
+		self::assertStringEndsWith('Kroketten an den Enden mit je einer halben Schinkenscheibe umwickeln.', $recipe->description);
+
+		$expectedGroup = new IngredientGroupDTO();
+		$expectedGroup->ingredients = [
+			'mehlige Erdäpfel',
+			'Rohschinken',
+			'griffiges Mehl',
+			'Dotter',
+			'Rohschinken (dünn geschnitten)',
+			'griffiges Mehl',
+			'Ei (verquirlt)',
+			'Semmelbrösel',
+			'Salz',
+			'Pfeffer',
+			'Mehl',
+			'Öl zum Backen'
 		];
 
 		self::assertEquals([$expectedGroup], $recipe->ingredientGroups);
