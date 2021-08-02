@@ -36,6 +36,15 @@ class Image {
 	 */
 	private $sort = 0;
 
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $created;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $modified;
 
 	public function getId() {
 		return $this->id;
@@ -95,6 +104,22 @@ class Image {
 	 */
 	public function setSort($sort): void {
 		$this->sort = $sort;
+	}
+
+	public function getCreated() {
+		return $this->created;
+	}
+
+	public function setCreated($created): void {
+		$this->created = $created;
+	}
+
+	public function getModified() {
+		return $this->modified;
+	}
+
+	public function setModified($modified): void {
+		$this->modified = $modified;
 	}
 
 }
