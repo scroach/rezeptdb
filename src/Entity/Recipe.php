@@ -57,7 +57,7 @@ class Recipe {
 
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="recipe", cascade={"persist"})
-	 * @ORM\OrderBy({"sort" = "ASC", "created" = "ASC"})
+	 * @ORM\OrderBy({"sort" = "ASC", "created" = "ASC", "id" = "ASC"})
 	 */
 	private $images;
 
