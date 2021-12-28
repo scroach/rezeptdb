@@ -10,14 +10,18 @@ $(function () {
 	let $formTagsString = $('#form_tagsString');
 	let $ingredientList = $('.ingredientList');
 
-	// init simple markdown editor for description
-	let descriptionMDE = new SimpleMDE({
-		element: $("#form_description")[0],
-		spellChecker: false,
-		status: false,
-		toolbar: ["bold", "italic", "|", "heading-1", "heading-2", "heading-3", "|", "unordered-list", "ordered-list", "|", "link", "image", "|", "guide"],
-		forceSync: true
-	});
+	let descriptionMDE = null;
+	// disable markdown editor on mobile since its broken :( https://github.com/sparksuite/simplemde-markdown-editor/issues/802
+	if (!/Mobi|Android/i.test(navigator.userAgent)) {
+		// init simple markdown editor for description
+		descriptionMDE = new SimpleMDE({
+			element: $("#form_description")[0],
+			spellChecker: false,
+			status: false,
+			toolbar: ["bold", "italic", "|", "heading-1", "heading-2", "heading-3", "|", "unordered-list", "ordered-list", "|", "link", "image", "|", "guide"],
+			forceSync: true
+		});
+	}
 
 	$urlInput.on('paste', function () {
 		setTimeout(fetchRecipeDataFromUrl, 0);
@@ -32,7 +36,11 @@ $(function () {
 			.then(function (response) {
 				$('#form_label').val(response.label);
 				$('#form_effort').val(response.effort);
-				descriptionMDE.value(response.description);
+				if(descriptionMDE) {
+					descriptionMDE.value(response.description);
+				} else {
+					$('#form_description').val(response.description);
+				}
 
 				if(response.ingredientGroups && response.ingredientGroups.length > 0) {
 					clearIngredients();
