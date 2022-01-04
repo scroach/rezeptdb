@@ -46,6 +46,11 @@ class Image {
 	 */
 	private $modified;
 
+	public function __construct() {
+		$this->created = new \DateTime();
+		$this->modified = new \DateTime();
+	}
+
 	public function getId() {
 		return $this->id;
 	}

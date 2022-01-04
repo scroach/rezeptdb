@@ -26,6 +26,10 @@ $(function () {
 	$urlInput.on('paste', function () {
 		setTimeout(fetchRecipeDataFromUrl, 0);
 	});
+	// if we're adding a new recipe and a URL is preset autofetch data
+	if(window.location.pathname.endsWith('/recipes/add') && $urlInput.val()) {
+		setTimeout(fetchRecipeDataFromUrl, 0);
+	}
 
 	function fetchRecipeDataFromUrl() {
 		$urlInput.closest('.input').addClass('loading');

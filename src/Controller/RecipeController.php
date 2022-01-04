@@ -82,7 +82,10 @@ class RecipeController extends AbstractController {
 	 * @Route("/recipes/add", name="addRecipe")
 	 */
 	public function addAction(Request $request) {
+		$url = $this->extractUrlFromQuery($request);
+
 		$recipe = new Recipe();
+		$recipe->setOriginUrl($url);
 		$recipe->setUser($this->getUser());
 		return $this->formAction($request, $recipe);
 	}
@@ -443,5 +446,15 @@ class RecipeController extends AbstractController {
 
 	protected function getUser(): User {
 		return parent::getUser();
+	}
+
+	/**
+	 * Extracts an url provided in the text query parameter by Android PWA sharing.
+	 * Regex thanks to https://stackoverflow.com/a/36564776/2424814
+	 */
+	private function extractUrlFromQuery(Request $request): string {
+		$text = $request->query->get('text');
+		preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $match);
+		return $match[0][0] ?? '';
 	}
 }
