@@ -1,7 +1,7 @@
 controllers:
     resource: ../../src/Controller/
-    type: annotation
+    type: attribute
 rest-controllers:
     resource: ../../src/RestController/
-    type: annotation
+    type: attribute
     prefix: /api

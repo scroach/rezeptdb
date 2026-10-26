@@ -8,12 +8,12 @@ use App\Entity\Recipe;
 use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class AppFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
 		$rick = new User();
 		$rick->setEmail('rick@rick.com');
@@ -49,9 +49,9 @@ class AppFixtures extends Fixture
 		$lilBits->setUser($morty);
         $manager->persist($recipe);
 
-        /** @var ClassMetadataInfo $metadata */
-        $metadata = $manager->getClassMetaData(get_class($recipe));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        /** @var ClassMetadata $metadata */
+        $metadata = $manager->getClassMetadata(get_class($recipe));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
         $metadata->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
 
         $tag = new Tag();

@@ -10,16 +10,19 @@ use Twig\TwigFilter;
  */
 class ParsedownExtension extends AbstractExtension {
 
-	public function getFilters() {
-		return [
-			new TwigFilter('parsedown', [$this, 'parsedown']),
-		];
-	}
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('parsedown', [$this, 'parsedown'], ['is_safe' => ['html']]),
+        ];
+    }
 
-	public function parsedown($text) {
-		$parsedown = new \Parsedown();
-		$parsedown->setSafeMode(true);
-		return $parsedown->text($text);
-	}
+    public function parsedown($text): string
+    {
+        $parsedown = new \Parsedown();
+        $parsedown->setSafeMode(true);
+
+        return (string) $parsedown->text((string) $text);
+    }
 
 }

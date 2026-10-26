@@ -4,6 +4,8 @@
 
 # How to install
 
+Requirements: PHP 8.5+ and MySQL/MariaDB.
+
 ```
 # download the source code
 git clone https://github.com/scroach/rezeptdb

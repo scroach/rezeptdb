@@ -76,7 +76,7 @@ class RecipeRepository extends ServiceEntityRepository {
 			->orderBy('r.modified', 'DESC');
 
 		if($maxResults) {
-			$query->setMaxResults(20);
+			$query->setMaxResults($maxResults);
 		}
 
 		if ($excludeIds) {

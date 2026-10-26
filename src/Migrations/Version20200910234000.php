@@ -7,7 +7,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200910234000 extends AbstractMigration {
 
-	public function getDescription() {
+	public function getDescription(): string {
 		return 'added user id to tags';
 	}
 
@@ -23,7 +23,7 @@ EOT
 		);
 	}
 
-	public function down(Schema $schema) {
+	public function down(Schema $schema): void {
 		// we don't do downs, life is too short to be down
 	}
 

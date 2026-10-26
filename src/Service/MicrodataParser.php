@@ -40,7 +40,8 @@ class MicrodataParser extends AbstractDOMParser {
 		return $result;
 	}
 
-	protected function fetchEffort(Crawler $doc): int {
+	protected function fetchEffort(Crawler $doc): string
+	{
 		return implode("\r\n", $doc->filter('[itemprop="totalTime"]')->extract(['content']));
 	}
 

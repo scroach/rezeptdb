@@ -80,6 +80,8 @@ class UserControllerTest extends AbstractWebTestCase
 
         self::assertTrue($this->client->getResponse()->isRedirect('/'));
 
+        // Basic auth is re-checked on every request, so use the new password for the next request.
+        $this->client->setServerParameter('PHP_AUTH_PW', 'abcdef');
         $this->client->request('GET', '/');
         $this->assertSuccessMessage('Dein Passwort wurde erfolgreich geändert!');
     }

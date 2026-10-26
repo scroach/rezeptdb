@@ -7,7 +7,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20180802190000 extends AbstractMigration {
 
-	public function getDescription() {
+	public function getDescription(): string {
 		return 'added ingredient groups';
 	}
 
@@ -32,7 +32,7 @@ EOT
 		);
 	}
 
-	public function down(Schema $schema) {
+	public function down(Schema $schema): void {
 		// we don't do downs, life is too short to be down
 	}
 

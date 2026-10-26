@@ -14,7 +14,7 @@ abstract class AbstractDOMParser {
 	protected function fetchDOM($url): Crawler {
 		// use internal errors so libxml won't throw php warnings/errors on non-wellformed docs
 		libxml_use_internal_errors(true);
-		$result = new Crawler(file_get_contents($url));
+		$result = new Crawler(@file_get_contents($url) ?: '');
 		libxml_clear_errors();
 		return $result;
 	}
@@ -64,7 +64,7 @@ abstract class AbstractDOMParser {
 	}
 
 	protected function extractImagesFromSrcAttribute($doc): array {
-		return $doc->filter('img')->extract('src');
+		return $doc->filter('img')->extract(['src']);
 	}
 
 	protected function extractBackgroundImageUrls($doc): array {
@@ -99,7 +99,10 @@ abstract class AbstractDOMParser {
 		}
 
 		try {
-			$imgSize = getimagesize($imgUrl);
+			$imgSize = @getimagesize($imgUrl);
+			if ($imgSize === false) {
+				return false;
+			}
 			$width = $imgSize[0];
 			$height = $imgSize[1];
 			$imageSizeBigger100Pixels = $width > 100 && $height > 100;

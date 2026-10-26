@@ -1,23 +1,17 @@
 language: php
 
 php:
-  - '7.4'
+  - '8.5'
 
 services:
   - mysql
 
 before_script:
   - composer install
-  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer require php-coveralls/php-coveralls
-  - php bin/console doctrine:database:create
   - cp phpunit.xml.dist phpunit.xml
+  - php bin/console doctrine:database:create
   - php bin/console doctrine:migrations:migrate --no-interaction
   - php bin/console doctrine:fixtures:load --no-interaction
 
 script:
-  - mkdir -p build/logs
-  - vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
-
-after_success:
-  - travis_retry php vendor/bin/php-coveralls
-
+  - vendor/bin/phpunit

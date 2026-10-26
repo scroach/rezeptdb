@@ -1,26 +1,33 @@
 <?php
 
 namespace App\RestController;
+
+use App\DTO\RecipeDTO;
 use App\Entity\Recipe;
+use App\Entity\User;
+use App\Repository\RecipeRepository;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use App\DTO\RecipeDTO;
 
-
-class RestRecipeController extends FOSRestController
+class RestRecipeController extends AbstractFOSRestController
 {
-    /**
-     * @FOSRest\Get("/recipes")
-     */
-    public function getRecipes() {
-        $recipes = $this->getDoctrine()->getRepository(Recipe::class)->fetchForIndex($this->getUser());
-        $recipeDTOs = array();
+    public function __construct(private RecipeRepository $recipeRepository)
+    {
+    }
+
+    #[FOSRest\Get('/recipes')]
+    public function getRecipes(): View
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $recipes = $this->recipeRepository->fetchForIndex($user);
+        $recipeDTOs = [];
         foreach ($recipes as $recipe) {
-            array_push($recipeDTOs, RecipeDTO::createFromRecipe($recipe));
+            $recipeDTOs[] = RecipeDTO::createFromRecipe($recipe);
         }
-        //return View::create(sizeof($recipeDTOs), Response::HTTP_OK , []);
-        return View::create($recipeDTOs, Response::HTTP_OK , []);
+
+        return View::create($recipeDTOs, Response::HTTP_OK, []);
     }
 }
